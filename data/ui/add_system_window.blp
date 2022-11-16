@@ -1,0 +1,73 @@
+using Gtk 4.0;
+using Adw 1;
+
+template AddSystemWindow : Adw.Window {
+    title: "Add System";
+    default-height: 300;
+    default-width: 400;
+    resizable: false;
+    modal: true;
+    content: Adw.ToastOverlay toast_overlay {
+        child: Box {
+            orientation: vertical;
+            hexpand: true;
+            vexpand: true;
+
+            Adw.HeaderBar header_bar {
+                decoration-layout: "";
+
+                [start]
+                Button {
+                    valign: center;
+                    label: "Cancel";
+                    clicked => cancel_clicked();
+                }
+
+                [end]
+                Button add_system_button {
+                    valign: center;
+                    label: "Add";
+                    clicked => add_system_clicked();
+                    styles [
+                      "suggested-action",
+                    ]
+                }
+            }
+
+            Adw.Clamp {
+                child: Box {
+                    orientation: vertical;
+                    margin-top: 24;
+                    margin-bottom: 24;
+                    margin-start: 12;
+                    margin-end: 12;
+                    spacing: 24;
+
+                    Adw.PreferencesGroup {
+                        title: "System information";
+
+                        Adw.EntryRow system_name_entry {
+                            title: "System name";
+                            changed => system_name_changed();
+                        }
+
+                        Adw.EntryRow games_directory_entry {
+                            title: "Games directory";
+                            changed => games_directory_changed();
+
+                            Button {
+                                valign: center;
+                                icon-name: "folder-open-symbolic";
+                                clicked => choose_games_directory_clicked();
+
+                                styles [
+                                    "flat",
+                                ]
+                            }
+                        }
+                    }
+                };
+            }
+        };
+    };
+}

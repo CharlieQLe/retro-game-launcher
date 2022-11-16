@@ -1,0 +1,85 @@
+using Gtk 4.0;
+using Adw 1;
+
+template MainWindow : Adw.ApplicationWindow {
+    title: "Retro Game Launcher";
+    default-width: 800;
+    default-height: 600;
+    content: Adw.ToastOverlay toast_overlay {
+        child: Box {
+            orientation: vertical;
+            hexpand: true;
+            vexpand: true;
+
+            Adw.Leaflet leaflet {
+                can-unfold: false;
+
+                Box home {
+                    orientation: vertical;
+                    hexpand: true;
+                    vexpand: true;
+
+                    Adw.HeaderBar {
+                        [start]
+                        Button {
+                            icon-name: "list-add-symbolic";
+                            tooltip-text: "New system";
+                            clicked => add_system_clicked();
+                        }
+
+                        [end]
+                        MenuButton {
+                            icon-name: "open-menu-symbolic";
+                            menu-model: primary_menu;
+                        }
+                    }
+
+                    Box no_systems_found {
+                        orientation: vertical;
+
+                        Adw.StatusPage {
+                            hexpand: true;
+                            vexpand: true;
+                            title: "No systems found";
+                            description: "Add a system!";
+                            icon-name: "applications-system-symbolic";
+                        }
+                    }
+
+                    Adw.Clamp systems_found {
+                        child: Box {
+                            orientation: vertical;
+                            margin-top: 24;
+                            margin-bottom: 24;
+                            margin-start: 12;
+                            margin-end: 12;
+                            spacing: 24;
+
+                            ListBox system_list {
+                                selection-mode: none;
+
+                                styles [
+                                    "boxed-list",
+                                ]
+                            }
+                        };
+                    }
+                }
+            }
+        };
+    };
+}
+
+menu primary_menu {
+    section {
+        item {
+            label: _("_Preferences");
+            action: "app.preferences";
+        }
+
+        item {
+            label: _("_About Retro Game Launcher");
+            action: "app.about";
+        }
+    }
+}

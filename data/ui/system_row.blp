@@ -1,0 +1,17 @@
+using Gtk 4.0;
+using Adw 1;
+
+template SystemRow : Adw.ActionRow {
+    activatable-widget: open_button;
+
+    Button open_button {
+        valign: center;
+        icon-name: "go-next-symbolic";
+
+        styles [
+            "flat",
+        ]
+
+        clicked => open_clicked();
+    }
+}
