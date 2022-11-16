@@ -50,6 +50,10 @@ class SystemBox(Gtk.Box):
     def refresh_clicked(self, *args):
         pass
 
+    @Gtk.Template.Callback()
+    def open_games_clicked(self, *args):
+        pass
+
     def on_closed(self):
         self.application.remove_action('app.manage_system')
         self.application.remove_action('app.delete_system')

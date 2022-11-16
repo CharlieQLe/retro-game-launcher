@@ -19,11 +19,25 @@ template SystemBox : Box {
             clicked => refresh_clicked();
         }
 
+        [start]
+        Button open_games_btn {
+            icon-name: "folder-open-symbolic";
+            clicked => open_games_clicked();
+        }
+
         [end]
         MenuButton {
             icon-name: "view-more-symbolic";
             menu-model: primary_menu;
         }
+    }
+
+    Adw.StatusPage no_games_found {
+        hexpand: true;
+        vexpand: true;
+        title: "No games found";
+        description: "Add games and start playing!";
+        icon-name: "applications-system-symbolic";
     }
 }
 
