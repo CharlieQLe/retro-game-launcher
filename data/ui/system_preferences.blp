@@ -1,0 +1,56 @@
+using Gtk 4.0;
+using Adw 1;
+
+template SystemPreferences : Adw.PreferencesWindow {
+    modal: true;
+
+    Adw.PreferencesPage {
+        Adw.PreferencesGroup {
+            title: _("Launch Settings");
+            description: _("Defines how ROM files should be executed");
+
+            Adw.EntryRow command_entry {
+                title: _("Command");
+                changed => command_changed();
+            }
+
+            Adw.ActionRow {
+                subtitle: _("${GAME} is the name of the game to run");
+            }
+        }
+
+        Adw.PreferencesGroup {
+            title: _("Games directory");
+            description: _("The parent directory for each game's folder");
+            Adw.EntryRow games_directory_entry {
+                title: _("Games Directory");
+                changed => games_directory_changed();
+                Gtk.Button {
+                    valign: center;
+                    icon-name: "folder-open-symbolic";
+                    clicked => choose_games_directory_clicked();
+                    styles [ "flat" ]
+                }
+            }
+        }
+
+        Adw.PreferencesGroup extension_group {
+            title: _("Extensions");
+            description: _("The file extension for each ROM file");
+            header-suffix: Gtk.Button {
+                valign: center;
+                clicked => add_extension_clicked();
+                styles [ "suggested-action" ]
+                child: Adw.ButtonContent {
+                    icon-name: "list-add-symbolic";
+                    label: _("Add Extension");
+                    use-underline: true;
+                };
+            };
+
+            Adw.ActionRow empty_row {
+                title: _("No extensions found");
+            }
+        }
+    }
+}

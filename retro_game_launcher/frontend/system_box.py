@@ -5,7 +5,7 @@ gi.require_version('Adw', '1')
 from gi.repository import Adw, Gtk, GObject
 from retro_game_launcher.backend import utility
 from retro_game_launcher.backend.system import SystemConfig
-import json
+from retro_game_launcher.frontend.system_preferences import SystemPreferences
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/system_box.ui')
 class SystemBox(Gtk.Box):
@@ -18,10 +18,11 @@ class SystemBox(Gtk.Box):
     go_back_btn = Gtk.Template.Child()
     refresh_btn = Gtk.Template.Child()
 
-    def __init__(self, system_name, application, **kwargs):
+    def __init__(self, system_name, application, window, **kwargs):
         super().__init__(**kwargs)
         self.system_name = system_name
         self.application = application
+        self.window = window
         self.header.set_title_widget(Adw.WindowTitle(title=system_name))
         self.system_config = SystemConfig.load(system_name)
 
@@ -41,7 +42,9 @@ class SystemBox(Gtk.Box):
         pass
 
     def manage_system(self, widget, _):
-        pass
+        pref = SystemPreferences(config=self.system_config)
+        pref.set_transient_for(self.window)
+        pref.present()
 
     def delete_system(self, widget, _):
         pass

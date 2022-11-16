@@ -27,7 +27,7 @@ class SystemConfig:
         self._config_path = os.path.join(utility.user_config_directory(), '%s.json' % system_name)
         self._configuration = {
             'games_directory': games_directory,
-            'launch_command': '',
+            'launch_command': 'INSERT_COMMAND_HERE ${GAME}',
             'extensions': [],
         }
 

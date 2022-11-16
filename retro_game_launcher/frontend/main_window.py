@@ -57,7 +57,7 @@ class MainWindow(Adw.ApplicationWindow):
 
     def _open_system_page(self, system_name):
         if system_name not in self.system_box_map:
-            box = SystemBox(system_name, self.get_application())
+            box = SystemBox(system_name, self.get_application(), self)
             box.connect('closed', self._close_system_page)
             self.leaflet.append(box)
             self.system_box_map[system_name] = box
