@@ -13,6 +13,13 @@ class SystemConfig:
         return sc
 
     @staticmethod
+    def delete(system_name):
+        if not SystemConfig.system_exists(system_name):
+            return False
+        os.remove(os.path.join(utility.user_config_directory(), '%s.json' % system_name))
+        return True
+
+    @staticmethod
     def get_system_names():
         return [f[:-5] for f in os.listdir(utility.user_config_directory()) if not os.path.isdir(f) and f.endswith('.json') and len(f) > 5]
 
