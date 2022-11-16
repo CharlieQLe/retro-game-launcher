@@ -1,0 +1,41 @@
+using Gtk 4.0;
+using Adw 1;
+
+template SystemBox : Box {
+    orientation: vertical;
+    hexpand: true;
+    vexpand: true;
+
+    Adw.HeaderBar header {
+        [start]
+        Button go_back_btn {
+            icon-name: "go-previous-symbolic";
+            clicked => back_clicked();
+        }
+
+        [start]
+        Button refresh_btn {
+            icon-name: "view-refresh-symbolic";
+            clicked => refresh_clicked();
+        }
+
+        [end]
+        MenuButton {
+            icon-name: "view-more-symbolic";
+            menu-model: primary_menu;
+        }
+    }
+}
+
+menu primary_menu {
+    section {
+        item {
+            label: "Manage system";
+            action: "app.manage_system";
+        }
+        item {
+            label: "Delete system";
+            action: "app.delete_system";
+        }
+    }
+}

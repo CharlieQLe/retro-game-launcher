@@ -5,6 +5,7 @@ from gi.repository import Adw, Gtk
 from retro_game_launcher.backend.system import SystemConfig
 from retro_game_launcher.frontend.add_system_window import AddSystemWindow
 from retro_game_launcher.frontend.system_row import SystemRow
+from retro_game_launcher.frontend.system_box import SystemBox
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/main_window.ui')
 class MainWindow(Adw.ApplicationWindow):
@@ -52,4 +53,15 @@ class MainWindow(Adw.ApplicationWindow):
         self._reload_systems()
 
     def _open_system(self, *args):
-        print(args[0].system_name)
+        self._open_system_page(args[0].system_name)
+
+    def _open_system_page(self, system_name):
+        if system_name not in self.system_box_map:
+            box = SystemBox(system_name, self.get_application())
+            box.connect('closed', self._close_system_page)
+            self.leaflet.append(box)
+            self.system_box_map[system_name] = box
+        self.leaflet.set_visible_child(self.system_box_map[system_name])
+
+    def _close_system_page(self, *args):
+        self.leaflet.set_visible_child(self.home)
