@@ -1,6 +1,6 @@
-data/org.gnome.Example.desktop.in
-data/org.gnome.Example.appdata.xml.in
-data/org.gnome.Example.gschema.xml
-gnome_python_template/main.py
-gnome_python_template/window.py
+data/com.charlieqle.RetroGameLauncher.desktop.in
+data/com.charlieqle.RetroGameLauncher.appdata.xml.in
+data/com.charlieqle.RetroGameLauncher.gschema.xml
+retro_game_launcher/main.py
+retro_game_launcher/window.py
 data/ui/window.ui

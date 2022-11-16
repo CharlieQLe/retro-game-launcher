@@ -1,9 +1,9 @@
 {
-    "app-id" : "org.gnome.Example",
+    "app-id" : "com.charlieqle.RetroGameLauncher",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "43",
     "sdk" : "org.gnome.Sdk",
-    "command" : "gnome-python-template",
+    "command" : "retro-game-launcher",
     "finish-args" : [
         "--share=network",
         "--share=ipc",
@@ -35,7 +35,7 @@
             ]
 	    },
         {
-            "name" : "gnome-python-template",
+            "name" : "retro-game-launcher",
             "builddir" : true,
             "buildsystem" : "meson",
             "sources" : [

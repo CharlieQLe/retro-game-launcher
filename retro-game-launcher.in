@@ -1,4 +1,6 @@
-# window.py
+#!@PYTHON@
+
+# gnome-python-template.in
 #
 # Copyright 2022 Charlie Le
 #
@@ -17,14 +19,30 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw
-from gi.repository import Gtk
+import os
+import sys
+import signal
+import locale
+import gettext
 
-@Gtk.Template(resource_path='/org/gnome/Example/ui/window.ui')
-class GnomePythonTemplateWindow(Adw.ApplicationWindow):
-    __gtype_name__ = 'GnomePythonTemplateWindow'
+VERSION = '@VERSION@'
+pkgdatadir = '@pkgdatadir@'
+localedir = '@localedir@'
+project_id = '@project_id@'
+application_id = '@application_id@'
 
-    label = Gtk.Template.Child()
+sys.path.insert(1, pkgdatadir)
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+locale.bindtextdomain(project_id, localedir)
+locale.textdomain(project_id)
+gettext.install(project_id, localedir)
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+if __name__ == '__main__':
+    import gi
+
+    from gi.repository import Gio
+    resource = Gio.Resource.load(os.path.join(pkgdatadir, '%s.gresource' % application_id))
+    resource._register()
+
+    from retro_game_launcher import main
+    sys.exit(main.main(VERSION))

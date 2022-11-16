@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=retro-game-launcher
+Exec=retro-game-launcher
+Icon=com.charlieqle.RetroGameLauncher
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true
