@@ -38,9 +38,9 @@ class SystemBox(Gtk.Box):
             body='This cannot be undone! Are you sure you want to delete %s?' % system_name)
         self.delete_dialog.add_response('cancel', _('_Cancel'))
         self.delete_dialog.add_response('delete', _('_Delete'))
+        self.delete_dialog.set_response_appearance('delete', Adw.ResponseAppearance.DESTRUCTIVE)
         self.delete_dialog.set_transient_for(window)
         self.delete_dialog.connect('response', self.delete_response)
-        self.delete_dialog.hide()
 
     @Gtk.Template.Callback()
     def back_clicked(self, *args):
@@ -67,3 +67,5 @@ class SystemBox(Gtk.Box):
         if args[1] == 'delete':
             self.on_closed()
             self.emit('deleted', self.system_name)
+        else:
+            self.delete_dialog.hide()
