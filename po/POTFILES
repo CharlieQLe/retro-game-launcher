@@ -1,0 +1,6 @@
+data/org.gnome.Example.desktop.in
+data/org.gnome.Example.appdata.xml.in
+data/org.gnome.Example.gschema.xml
+gnome_python_template/main.py
+gnome_python_template/window.py
+data/ui/window.ui

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=gnome-python-template
+Exec=gnome-python-template
+Icon=org.gnome.Example
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true
