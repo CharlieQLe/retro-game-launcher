@@ -59,6 +59,7 @@ class SystemPreferences(Adw.PreferencesWindow):
         self.config.set_extensions(ext)
         self.config.save()
         self.add_extension_row()
+        self.empty_row.hide()
 
     def add_extension_row(self, extension=''):
         row = Adw.EntryRow(title="File extension")
@@ -80,6 +81,8 @@ class SystemPreferences(Adw.PreferencesWindow):
             self.extension_group.remove(row)
             self.extension_rows.remove(row)
             self.save_extensions()
+        if len(self.extension_rows) == 0:
+            self.empty_row.show()
 
     def save_extensions(self):
         self.config.set_extensions([ row.get_text() for row in self.extension_rows ])

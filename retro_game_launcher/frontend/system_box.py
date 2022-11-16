@@ -2,9 +2,10 @@ import os
 import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
-from gi.repository import Adw, Gtk, GObject
+from gi.repository import Adw, Gdk, Gio, GLib, Gtk, GObject
 from retro_game_launcher.backend import utility
 from retro_game_launcher.backend.system import SystemConfig
+from retro_game_launcher.backend.game import Game
 from retro_game_launcher.frontend.system_preferences import SystemPreferences
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/system_box.ui')
@@ -18,16 +19,17 @@ class SystemBox(Gtk.Box):
     header = Gtk.Template.Child()
     go_back_btn = Gtk.Template.Child()
     refresh_btn = Gtk.Template.Child()
+    no_games_found = Gtk.Template.Child()
+    games_found = Gtk.Template.Child()
 
     def __init__(self, system_name, application, window, **kwargs):
         super().__init__(**kwargs)
+
         self.system_name = system_name
         self.application = application
         self.window = window
         self.header.set_title_widget(Adw.WindowTitle(title=system_name))
         self.system_config = SystemConfig.load(system_name)
-
-        # TODO: Display games
 
         self.application.create_action('manage_system', self.manage_system)
         self.application.create_action('delete_system', self.delete_system)
@@ -42,17 +44,19 @@ class SystemBox(Gtk.Box):
         self.delete_dialog.set_transient_for(window)
         self.delete_dialog.connect('response', self.delete_response)
 
+        self.reload_view()
+
     @Gtk.Template.Callback()
     def back_clicked(self, *args):
         self.on_closed()
 
     @Gtk.Template.Callback()
     def refresh_clicked(self, *args):
-        pass
+        self.reload_view()
 
     @Gtk.Template.Callback()
     def open_games_clicked(self, *args):
-        pass
+        Gtk.show_uri(self.window, GLib.filename_to_uri(self.system_config.get_games_dir()), Gdk.CURRENT_TIME)
 
     def on_closed(self):
         self.application.remove_action('app.manage_system')
@@ -73,3 +77,20 @@ class SystemBox(Gtk.Box):
             self.emit('deleted', self.system_name)
         else:
             self.delete_dialog.hide()
+
+    def reload_view(self):
+        game_subfolders = self.system_config.get_game_subfolders()
+        if len(game_subfolders) == 0:
+            self.no_games_found.show()
+            self.games_found.hide()
+        else:
+            self.no_games_found.hide()
+            self.games_found.show()
+            extensions = self.system_config.get_extensions()
+            for game_subfolder in game_subfolders:
+                game_subfolder_dir = os.path.join(self.system_config.get_games_dir(), game_subfolder)
+                game_subfolder_contents = os.listdir(game_subfolder_dir)
+                game_file_name = next(filter(lambda file_name : any(file_name.endswith(ext) for ext in extensions), game_subfolder_contents))
+                if game_file_name is None:
+                    continue
+                game = Game(game_subfolder_dir, game_file_name, self.system_config)

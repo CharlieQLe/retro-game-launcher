@@ -39,6 +39,17 @@ template SystemBox : Box {
         description: "Add games and start playing!";
         icon-name: "applications-system-symbolic";
     }
+
+    Gtk.ScrolledWindow games_found {
+        hexpand: true;
+        vexpand: true;
+        Gtk.FlowBox games_box {
+            hexpand: true;
+            vexpand: true;
+            selection-mode: none;
+            homogeneous: true;
+        }
+    }
 }
 
 menu primary_menu {

@@ -35,6 +35,7 @@ class SystemConfig:
         self._configuration = {
             'games_directory': games_directory,
             'launch_command': 'INSERT_COMMAND_HERE ${GAME}',
+            'launch_vars': {},
             'extensions': [],
         }
 
@@ -62,6 +63,9 @@ class SystemConfig:
     def get_launch_command(self):
         return self._configuration['launch_command']
 
+    def get_launch_vars(self):
+        return self._configuration['launch_vars']
+
     ### SETTERS
 
     def set_games_dir(self, games_directory):
@@ -72,3 +76,14 @@ class SystemConfig:
 
     def set_launch_command(self, launch_command):
         self._configuration['launch_command'] = launch_command
+
+    def set_launch_var(self, key, value):
+        self._configuration['launch_vars'][key] = value
+
+    ### GAMES
+
+    def get_game_subfolders(self):
+        dir = self.get_games_dir()
+        if not os.path.isdir(dir):
+            return []
+        return [ d for d in os.listdir(dir) if os.path.isdir(os.path.join(dir, d)) ]
