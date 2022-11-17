@@ -46,6 +46,7 @@ template SystemBox : Box {
         child: Gtk.GridView game_view {
             enable-rubberband: false;
             model: Gtk.SingleSelection {
+                autoselect: false;
                 model: bind SystemBox.games;
             };
         };

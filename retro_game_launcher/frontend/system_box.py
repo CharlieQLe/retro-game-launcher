@@ -3,6 +3,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk, GObject
+import retro_game_launcher.backend.constants as constants
 from retro_game_launcher.backend import utility
 from retro_game_launcher.backend.system import SystemConfig
 from retro_game_launcher.backend.game import Game
@@ -60,20 +61,25 @@ class SystemBox(Gtk.Box):
         self.reload_view()
 
     def on_factory_setup(self, widget, item):
-        label = Gtk.Label()
-        label.set_halign(Gtk.Align.START)
-        label.set_hexpand(True)
-        label.set_margin_start(10)
-        label.set_margin_end(10)
-        label.set_margin_top(10)
-        label.set_margin_bottom(10)
-        item.set_child(label)
+        pass
 
     def on_factory_bind(self, widget, item):
-        label = item.get_child()
         data = item.get_item()
-        label.set_text(data.game_name)
-        item.set_child(label)
+
+        builder = Gtk.Builder.new_from_resource('/com/charlieqle/RetroGameLauncher/ui/game_item.ui')
+        game_item = builder.get_object('game_item')
+        cover_image = builder.get_object('cover_image')
+        label_no_cover = builder.get_object('label_no_cover')
+
+        if data.cover_file_path is None:
+            cover_image.hide()
+        else:
+            label_no_cover.hide()
+            cover_image.set_from_file(data.cover_file_path)
+
+        label_no_cover.set_text(data.game_name)
+
+        item.set_child(game_item)
 
     def on_factory_unbind(self, widget, item):
         pass
@@ -138,8 +144,12 @@ class SystemBox(Gtk.Box):
             for game_subfolder in game_subfolders:
                 game_subfolder_dir = os.path.join(self.system_config.get_games_dir(), game_subfolder)
                 game_subfolder_contents = os.listdir(game_subfolder_dir)
-                game_file_name = next(filter(lambda file_name : any(file_name.endswith(ext) for ext in extensions), game_subfolder_contents))
-                if game_file_name is None:
+
+                game_files = list(filter(lambda file_name : any(file_name.endswith('.%s' % ext) for ext in extensions), game_subfolder_contents))
+                cover_files = list(filter(lambda file_name : any(file_name.endswith('.%s' % ext) for ext in constants.cover_extensions), game_subfolder_contents))
+                if len(game_files) == 0:
                     continue
-                game = Game(game_subfolder, game_subfolder_dir, game_file_name, self.system_config)
+                cover_file_path = os.path.join(game_subfolder_dir, cover_files[0]) if len(cover_files) > 0 else None
+
+                game = Game(game_subfolder, game_subfolder_dir, game_files[0], self.system_config, cover_file_path)
                 self.games.append(game)

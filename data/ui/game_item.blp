@@ -1,0 +1,32 @@
+using Gtk 4.0;
+
+Gtk.Box game_item {
+    margin-top: 10;
+    margin-bottom: 10;
+    orientation: vertical;
+    halign: center;
+    valign: center;
+    width-request: 128;
+    overflow: hidden;
+    styles [ "card" ]
+
+    Gtk.Box {
+        halign: center;
+        valign: center;
+        orientation: vertical;
+        width-request: 384;
+        height-request: 256;
+
+        Gtk.Image cover_image {
+            hexpand: true;
+            vexpand: true;
+        }
+
+        Label label_no_cover {
+            halign: center;
+            valign: center;
+            hexpand: true;
+            vexpand: true;
+        }
+    }
+}
