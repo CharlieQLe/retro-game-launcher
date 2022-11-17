@@ -15,15 +15,28 @@ class SystemBox(Gtk.Box):
         'closed': (GObject.SIGNAL_RUN_FIRST, None, ()),
         'deleted': (GObject.SIGNAL_RUN_FIRST, None, (str,))
     }
+    __gproperties__ = {
+        'games': (Gio.ListStore, 'games', 'Store all found games', GObject.ParamFlags.READWRITE)
+    }
 
     header = Gtk.Template.Child()
     go_back_btn = Gtk.Template.Child()
     refresh_btn = Gtk.Template.Child()
     no_games_found = Gtk.Template.Child()
     games_found = Gtk.Template.Child()
+    game_view = Gtk.Template.Child()
 
     def __init__(self, system_name, application, window, **kwargs):
+        self.games = Gio.ListStore.new(Game)
+
         super().__init__(**kwargs)
+
+        self.factory = Gtk.SignalListItemFactory()
+        self.factory.connect('setup', self.on_factory_setup)
+        self.factory.connect('bind', self.on_factory_bind)
+        self.factory.connect('unbind', self.on_factory_unbind)
+        self.factory.connect('teardown', self.on_factory_teardown)
+        self.game_view.set_factory(self.factory)
 
         self.system_name = system_name
         self.application = application
@@ -45,6 +58,40 @@ class SystemBox(Gtk.Box):
         self.delete_dialog.connect('response', self.delete_response)
 
         self.reload_view()
+
+    def on_factory_setup(self, widget, item):
+        label = Gtk.Label()
+        label.set_halign(Gtk.Align.START)
+        label.set_hexpand(True)
+        label.set_margin_start(10)
+        label.set_margin_end(10)
+        label.set_margin_top(10)
+        label.set_margin_bottom(10)
+        item.set_child(label)
+
+    def on_factory_bind(self, widget, item):
+        label = item.get_child()
+        data = item.get_item()
+        label.set_text(data.game_name)
+        item.set_child(label)
+
+    def on_factory_unbind(self, widget, item):
+        pass
+
+    def on_factory_teardown(self, widget, item):
+        pass
+
+    def do_get_property(self, prop):
+        if prop.name == 'games':
+            return self.games
+        else:
+            raise AttributeError('unknown property %s' % prop.name)
+
+    def do_set_property(self, prop, value):
+        if prop.name == 'games':
+            self.games = value
+        else:
+            raise AttributeError('unknown property %s' % prop.name)
 
     @Gtk.Template.Callback()
     def back_clicked(self, *args):
@@ -79,6 +126,7 @@ class SystemBox(Gtk.Box):
             self.delete_dialog.hide()
 
     def reload_view(self):
+        self.games.remove_all()
         game_subfolders = self.system_config.get_game_subfolders()
         if len(game_subfolders) == 0:
             self.no_games_found.show()
@@ -93,4 +141,5 @@ class SystemBox(Gtk.Box):
                 game_file_name = next(filter(lambda file_name : any(file_name.endswith(ext) for ext in extensions), game_subfolder_contents))
                 if game_file_name is None:
                     continue
-                game = Game(game_subfolder_dir, game_file_name, self.system_config)
+                game = Game(game_subfolder, game_subfolder_dir, game_file_name, self.system_config)
+                self.games.append(game)
