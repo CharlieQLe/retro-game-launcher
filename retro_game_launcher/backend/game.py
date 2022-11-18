@@ -9,14 +9,21 @@ class Game(GObject.Object):
 
     process = None
 
-    def __init__(self, game_name, directory, game_file_name, config, cover_file_path):
+    def __init__(self, game_name, game_file_name, thumbnail_file_name, config):
         GObject.Object.__init__(self)
         self.game_name = game_name
-        self.directory = directory
         self.game_file_name = game_file_name
         self.config = config
-        self.cover_file_path = cover_file_path
-        self.game_file_path = os.path.join(self.directory, self.game_file_name)
+        self.thumbnail_file_name = thumbnail_file_name
+
+    def get_directory(self):
+        return os.path.join(self.config.get_games_dir(), self.game_name)
+
+    def get_game_path(self):
+        return os.path.join(self.get_directory(), self.game_file_name)
+
+    def get_thumbnail_path(self):
+        return None if self.thumbnail_file_name is None else os.path.join(self.get_directory(), self.thumbnail_file_name)
 
     def run(self):
         if self.process is not None:
@@ -27,7 +34,7 @@ class Game(GObject.Object):
         command = ['/usr/bin/flatpak-spawn', '--host']
         for x in self.config.get_launch_command().split():
             command.append(x)
-        env = utility.environment_map(game_name=self.game_file_path)
+        env = utility.environment_map(game_name=self.get_game_path())
         for i in range(len(command)):
             command[i] = utility.environment_replace(command[i], env)
         self.process = subprocess.Popen(command)

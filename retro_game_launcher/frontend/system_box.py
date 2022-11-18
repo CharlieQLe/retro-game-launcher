@@ -75,14 +75,13 @@ class SystemBox(Gtk.Box):
         label_no_cover = builder.get_object('label_no_cover')
         game_name_label = builder.get_object('game_name_label')
         play_game_btn = builder.get_object('play_game_btn')
-
         thumbnail_size = self.system_config.get_image_thumbnail_size()
-
-        if data.cover_file_path is None:
+        thumbnail_path = data.get_thumbnail_path()
+        if thumbnail_path is None:
             thumbnail_img.hide()
         else:
             no_cover_box.hide()
-            thumbnail_img.set_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size(data.cover_file_path, thumbnail_size[0], thumbnail_size[1]))
+            thumbnail_img.set_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size(thumbnail_path, thumbnail_size[0], thumbnail_size[1]))
 
         game_name_label.set_text(data.game_name)
 
@@ -168,7 +167,9 @@ class SystemBox(Gtk.Box):
                 cover_files = list(filter(lambda file_name : any(file_name.endswith('.%s' % ext) for ext in constants.cover_extensions), game_subfolder_contents))
                 if len(game_files) == 0:
                     continue
-                cover_file_path = os.path.join(game_subfolder_dir, cover_files[0]) if len(cover_files) > 0 else None
-
-                game = Game(game_subfolder, game_subfolder_dir, game_files[0], self.system_config, cover_file_path)
-                self.games.append(game)
+                cover_file_path = os.path.join(game_subfolder_dir, ) if len(cover_files) > 0 else None
+                self.games.append(Game(
+                    game_name=game_subfolder,
+                    game_file_name=game_files[0],
+                    thumbnail_file_name=cover_files[0] if len(cover_files) > 0 else None,
+                    config=self.system_config))
