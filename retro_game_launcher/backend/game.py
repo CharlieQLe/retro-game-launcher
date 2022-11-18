@@ -17,7 +17,6 @@ class Game(GObject.Object):
         self.config = config
         self.cover_file_path = cover_file_path
         self.game_file_path = os.path.join(self.directory, self.game_file_name)
-        self.display_game_name = game_name if len(game_name) < 40 else game_name[:40] + '...'
 
     def run(self):
         if self.process is not None:

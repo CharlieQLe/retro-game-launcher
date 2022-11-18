@@ -34,7 +34,14 @@ class SystemConfig:
         self._config_path = os.path.join(utility.user_config_directory(), '%s.json' % system_name)
         self._configuration = {
             'games_directory': games_directory,
-            'launch_command': 'INSERT_COMMAND_HERE ${GAME}',
+            'emulator_command': [
+                'INSERT_COMMAND_HERE'
+            ],
+            'launch_command': [
+                '${EMULATOR}',
+                'INSERT_OPTIONS_HERE',
+                '${GAME}'
+            ],
             'launch_vars': {},
             'images': {
                 'thumbnail': {
@@ -66,6 +73,9 @@ class SystemConfig:
     def get_extensions(self):
         return self._configuration['extensions']
 
+    def get_emulator_command(self):
+        return self._configuration['emulator_command']
+
     def get_launch_command(self):
         return self._configuration['launch_command']
 
@@ -83,6 +93,9 @@ class SystemConfig:
 
     def set_extensions(self, extensions):
         self._configuration['extensions'] = extensions
+
+    def set_emulator_command(self, emulator_command):
+        self._configuration['emulator_command'] = emulator_command
 
     def set_launch_command(self, launch_command):
         self._configuration['launch_command'] = launch_command

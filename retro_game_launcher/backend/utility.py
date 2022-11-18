@@ -30,11 +30,11 @@ def environment_map(game_name=None):
         'GAME': game_name
     }
 
-def environment_replace(string, environment={}):
+def environment_replace_string(string, environment={}):
     fixed_string = string
     has_key = True
     while has_key:
-        has_key = False
+        has_key = Falsecommand
         for e in environment:
             env = '${%s}' % e
             value = environment[e]
@@ -43,6 +43,19 @@ def environment_replace(string, environment={}):
                 fixed_string = fixed_string.replace(env, value)
     return fixed_string
 
+def environment_replace_command(command, environment={}):
+    replaced = command.copy()
+    has_key = True
+    while has_key:
+        has_key = False
+        for key in environment:
+            env = '${%s}' % key
+            value = environment[key]
+            if value is not None:
+                if env in replaced:
+                    has_key = True
+                    replaced[replaced.index(env)] = value
+    return replaced
 
 def gsettings():
     return Gio.Settings(schema_id=constants.app_id)

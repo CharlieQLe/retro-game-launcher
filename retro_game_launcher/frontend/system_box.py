@@ -1,5 +1,6 @@
 import os
 import gi
+import subprocess
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, Gdk, GdkPixbuf, Gio, GLib, Gtk, GObject
@@ -68,24 +69,26 @@ class SystemBox(Gtk.Box):
 
         builder = Gtk.Builder.new_from_resource('/com/charlieqle/RetroGameLauncher/ui/game_item.ui')
         game_item = builder.get_object('game_item')
-        cover_image = builder.get_object('cover_image')
+        thumbnail_box = builder.get_object('thumbnail_box')
+        thumbnail_img = builder.get_object('thumbnail_img')
         no_cover_box = builder.get_object('no_cover_box')
         label_no_cover = builder.get_object('label_no_cover')
         game_name_label = builder.get_object('game_name_label')
         play_game_btn = builder.get_object('play_game_btn')
 
+        thumbnail_size = self.system_config.get_image_thumbnail_size()
+
         if data.cover_file_path is None:
-            cover_image.hide()
+            thumbnail_img.hide()
         else:
             no_cover_box.hide()
-            cover_image.set_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size(data.cover_file_path, 384, 256))
+            thumbnail_img.set_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size(data.cover_file_path, thumbnail_size[0], thumbnail_size[1]))
 
-        game_name_label.set_text(data.display_game_name)
+        game_name_label.set_text(data.game_name)
 
         play_game_btn.connect('clicked', lambda *args : data.run())
 
-        thumbnail_size = self.system_config.get_image_thumbnail_size()
-        game_item.set_size_request(thumbnail_size[0], thumbnail_size[1])
+        thumbnail_box.set_size_request(thumbnail_size[0], thumbnail_size[1])
 
         item.set_activatable(False)
         item.set_child(game_item)
@@ -119,6 +122,13 @@ class SystemBox(Gtk.Box):
     @Gtk.Template.Callback()
     def open_games_clicked(self, *args):
         Gtk.show_uri(self.window, GLib.filename_to_uri(self.system_config.get_games_dir()), Gdk.CURRENT_TIME)
+
+    @Gtk.Template.Callback()
+    def open_emu_clicked(self, *args):
+        command = utility.environment_replace_command(self.system_config.get_emulator_command(), utility.environment_map())
+        command.insert(0, '--host')
+        command.insert(0, '/usr/bin/flatpak-spawn')
+        subprocess.Popen(command)
 
     def on_closed(self):
         self.application.remove_action('app.manage_system')

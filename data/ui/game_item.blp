@@ -4,37 +4,36 @@ Gtk.Box game_item {
     orientation: vertical;
     halign: center;
     valign: center;
-    width-request: 256;
-    height-request: 256;
     margin-top: 15;
     margin-bottom: 15;
     margin-start: 10;
     margin-end: 10;
     styles [ "card", "activatable" ]
 
-    Gtk.Picture cover_image {
-        hexpand: true;
-        vexpand: true;
-        content-fit: cover;
-
-        styles [ "card" ]
-    }
-
-    Gtk.Box no_cover_box {
-        orientation: vertical;
-        hexpand: true;
-        vexpand: true;
-        Gtk.Label {
-            label: "no thumbnail found";
-            halign: center;
-            valign: center;
+    Gtk.Box thumbnail_box {
+        Gtk.Picture thumbnail_img {
+            content-fit: cover;
             hexpand: true;
             vexpand: true;
-            wrap: true;
-            justify: center;
-            styles [ "dim-label" ]
+            styles [ "card" ]
         }
-        styles [ "card" ]
+
+        Gtk.Box no_cover_box {
+            orientation: vertical;
+            hexpand: true;
+            vexpand: true;
+            Gtk.Label {
+                label: "no thumbnail found";
+                halign: center;
+                valign: center;
+                hexpand: true;
+                vexpand: true;
+                wrap: true;
+                justify: center;
+                styles [ "dim-label" ]
+            }
+            styles [ "card" ]
+        }
     }
 
     Gtk.Box {
@@ -47,13 +46,15 @@ Gtk.Box game_item {
 
         Gtk.Label game_name_label {
             label: "GAME_NAME";
+            max-width-chars: 1;
+            ellipsize: end;
+            xalign: 0.0;
+            hexpand: true;
             styles [ "heading" ]
         }
 
         Gtk.Button play_game_btn {
             icon-name: "media-playback-start-symbolic";
-            halign: end;
-            hexpand: true;
             styles [
                 "flat",
                 "circular"

@@ -25,6 +25,12 @@ template SystemBox : Box {
             clicked => open_games_clicked();
         }
 
+        [start]
+        Button open_emu_btn {
+            icon-name: "applications-games-symbolic";
+            clicked => open_emu_clicked();
+        }
+
         [end]
         MenuButton {
             icon-name: "view-more-symbolic";

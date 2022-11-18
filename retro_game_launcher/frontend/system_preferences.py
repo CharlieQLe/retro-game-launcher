@@ -8,7 +8,8 @@ from gi.repository import Adw, Gtk
 class SystemPreferences(Adw.PreferencesWindow):
     __gtype_name__ = 'SystemPreferences'
 
-    command_entry = Gtk.Template.Child()
+    launch_command_entry = Gtk.Template.Child()
+    emulator_command_entry = Gtk.Template.Child()
     games_directory_entry = Gtk.Template.Child()
     extension_group = Gtk.Template.Child()
     empty_extension_row = Gtk.Template.Child()
@@ -17,7 +18,8 @@ class SystemPreferences(Adw.PreferencesWindow):
     def __init__(self, config, **kwargs):
         super().__init__(**kwargs)
         self.config = config
-        self.command_entry.set_text(self.config.get_launch_command())
+        self.launch_command_entry.set_text(' '.join(self.config.get_launch_command()))
+        self.emulator_command_entry.set_text(' '.join(self.config.get_emulator_command()))
         self.games_directory_entry.set_text(self.config.get_games_dir())
         extensions = self.config.get_extensions()
         if len(extensions) == 0:
@@ -37,8 +39,15 @@ class SystemPreferences(Adw.PreferencesWindow):
         self.games_directory_chooser.connect('response', self.games_directory_response)
 
     @Gtk.Template.Callback()
-    def command_changed(self, *args):
-        self.config.set_launch_command(args[0].get_text())
+    def launch_command_changed(self, *args):
+        launch_str = args[0].get_text()
+        self.config.set_launch_command(launch_str.split(' '))
+        self.config.save()
+
+    @Gtk.Template.Callback()
+    def emulator_command_changed(self, *args):
+        emulator_str = args[0].get_text()
+        self.config.set_emulator_command(emulator_str.split(' '))
         self.config.save()
 
     @Gtk.Template.Callback()

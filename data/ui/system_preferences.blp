@@ -7,16 +7,21 @@ template SystemPreferences : Adw.PreferencesWindow {
 
     Adw.PreferencesPage {
         Adw.PreferencesGroup {
-            title: _("Launch Settings");
+            title: _("Commands");
             description: _("Defines how ROM files should be executed");
 
-            Adw.EntryRow command_entry {
-                title: _("Command");
-                changed => command_changed();
+            Adw.EntryRow launch_command_entry {
+                title: _("Launch Command");
+                changed => launch_command_changed();
+            }
+
+            Adw.EntryRow emulator_command_entry {
+                title: _("${EMULATOR}");
+                changed => emulator_command_changed();
             }
 
             Adw.ActionRow {
-                subtitle: _("${GAME} is the name of the game to run");
+                subtitle: _("${GAME} is the path to the ROM file");
             }
         }
 
