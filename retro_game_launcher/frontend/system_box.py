@@ -2,7 +2,7 @@ import os
 import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
-from gi.repository import Adw, Gdk, Gio, GLib, Gtk, GObject
+from gi.repository import Adw, Gdk, GdkPixbuf, Gio, GLib, Gtk, GObject
 import retro_game_launcher.backend.constants as constants
 from retro_game_launcher.backend import utility
 from retro_game_launcher.backend.system import SystemConfig
@@ -69,16 +69,25 @@ class SystemBox(Gtk.Box):
         builder = Gtk.Builder.new_from_resource('/com/charlieqle/RetroGameLauncher/ui/game_item.ui')
         game_item = builder.get_object('game_item')
         cover_image = builder.get_object('cover_image')
+        no_cover_box = builder.get_object('no_cover_box')
         label_no_cover = builder.get_object('label_no_cover')
+        game_name_label = builder.get_object('game_name_label')
+        play_game_btn = builder.get_object('play_game_btn')
 
         if data.cover_file_path is None:
             cover_image.hide()
         else:
-            label_no_cover.hide()
-            cover_image.set_from_file(data.cover_file_path)
+            no_cover_box.hide()
+            cover_image.set_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size(data.cover_file_path, 384, 256))
 
-        label_no_cover.set_text(data.game_name)
+        game_name_label.set_text(data.display_game_name)
 
+        play_game_btn.connect('clicked', lambda *args : data.run())
+
+        thumbnail_size = self.system_config.get_image_thumbnail_size()
+        game_item.set_size_request(thumbnail_size[0], thumbnail_size[1])
+
+        item.set_activatable(False)
         item.set_child(game_item)
 
     def on_factory_unbind(self, widget, item):

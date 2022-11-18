@@ -5,6 +5,8 @@ template MainWindow : Adw.ApplicationWindow {
     title: "Retro Game Launcher";
     default-width: 800;
     default-height: 600;
+    styles [ "devel" ]
+
     content: Adw.ToastOverlay toast_overlay {
         child: Box {
             orientation: vertical;

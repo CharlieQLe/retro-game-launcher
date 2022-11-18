@@ -11,7 +11,7 @@ class SystemPreferences(Adw.PreferencesWindow):
     command_entry = Gtk.Template.Child()
     games_directory_entry = Gtk.Template.Child()
     extension_group = Gtk.Template.Child()
-    empty_row = Gtk.Template.Child()
+    empty_extension_row = Gtk.Template.Child()
     extension_rows = []
 
     def __init__(self, config, **kwargs):
@@ -21,9 +21,9 @@ class SystemPreferences(Adw.PreferencesWindow):
         self.games_directory_entry.set_text(self.config.get_games_dir())
         extensions = self.config.get_extensions()
         if len(extensions) == 0:
-            self.empty_row.show()
+            self.empty_extension_row.show()
         else:
-            self.empty_row.hide()
+            self.empty_extension_row.hide()
             for extension in extensions:
                 self.add_extension_row(extension)
         self.games_directory_chooser = Gtk.FileChooserNative(
@@ -59,7 +59,7 @@ class SystemPreferences(Adw.PreferencesWindow):
         self.config.set_extensions(ext)
         self.config.save()
         self.add_extension_row()
-        self.empty_row.hide()
+        self.empty_extension_row.hide()
 
     def add_extension_row(self, extension=''):
         row = Adw.EntryRow(title="File extension")
@@ -82,7 +82,7 @@ class SystemPreferences(Adw.PreferencesWindow):
             self.extension_rows.remove(row)
             self.save_extensions()
         if len(self.extension_rows) == 0:
-            self.empty_row.show()
+            self.empty_extension_row.show()
 
     def save_extensions(self):
         self.config.set_extensions([ row.get_text() for row in self.extension_rows ])

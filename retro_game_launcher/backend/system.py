@@ -36,6 +36,12 @@ class SystemConfig:
             'games_directory': games_directory,
             'launch_command': 'INSERT_COMMAND_HERE ${GAME}',
             'launch_vars': {},
+            'images': {
+                'thumbnail': {
+                    'width': 256,
+                    'height': 256
+                }
+            },
             'extensions': [],
         }
 
@@ -66,6 +72,10 @@ class SystemConfig:
     def get_launch_vars(self):
         return self._configuration['launch_vars']
 
+    def get_image_thumbnail_size(self):
+        thumbnail = self._configuration['images']['thumbnail']
+        return (thumbnail['width'], thumbnail['height'])
+
     ### SETTERS
 
     def set_games_dir(self, games_directory):
@@ -79,6 +89,11 @@ class SystemConfig:
 
     def set_launch_var(self, key, value):
         self._configuration['launch_vars'][key] = value
+
+    def set_image_thumbnail_size(self, width, height):
+        thumbnail = self._configuration['images']['thumbnail']
+        thumbnail['width'] = width
+        thumbnail['height'] = height
 
     ### GAMES
 

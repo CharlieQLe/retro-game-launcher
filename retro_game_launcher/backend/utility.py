@@ -30,18 +30,19 @@ def environment_map(game_name=None):
         'GAME': game_name
     }
 
-def substitute_path(path, env_map={}):
-    fixed_path = path
+def environment_replace(string, environment={}):
+    fixed_string = string
     has_key = True
     while has_key:
         has_key = False
-        for e in env_map:
+        for e in environment:
             env = '${%s}' % e
-            value = env_map[e]
+            value = environment[e]
             if value is not None:
-                has_key = has_key or fixed_path.__contains__(env)
-                fixed_path = fixed_path.replace(env, value)
-    return fixed_path
+                has_key = has_key or fixed_string.__contains__(env)
+                fixed_string = fixed_string.replace(env, value)
+    return fixed_string
+
 
 def gsettings():
     return Gio.Settings(schema_id=constants.app_id)

@@ -35,6 +35,15 @@ template SystemPreferences : Adw.PreferencesWindow {
             }
         }
 
+        Adw.PreferencesGroup image_group {
+            title: _("Images");
+            description: _("Adjust each image size");
+
+            Adw.ActionRow {
+                title: _("Thumbnail Size");
+            }
+        }
+
         Adw.PreferencesGroup extension_group {
             title: _("Extensions");
             description: _("The file extension for each ROM file");
@@ -49,7 +58,7 @@ template SystemPreferences : Adw.PreferencesWindow {
                 };
             };
 
-            Adw.ActionRow empty_row {
+            Adw.ActionRow empty_extension_row {
                 title: _("No extensions found");
             }
         }
