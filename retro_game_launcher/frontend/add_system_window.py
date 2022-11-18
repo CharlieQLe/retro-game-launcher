@@ -14,13 +14,13 @@ class AddSystemWindow(Adw.Window):
     }
 
     toast_overlay = Gtk.Template.Child()
-    add_system_button = Gtk.Template.Child()
+    add_system_btn = Gtk.Template.Child()
     system_name_entry = Gtk.Template.Child()
     games_directory_entry = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.add_system_button.set_sensitive(False)
+        self.add_system_btn.set_sensitive(False)
         self.games_directory_chooser = Gtk.FileChooserNative(
             title='Select a folder',
             action=Gtk.FileChooserAction.SELECT_FOLDER,
@@ -31,10 +31,11 @@ class AddSystemWindow(Adw.Window):
             transient_for=self)
         self.games_directory_chooser.connect('response', self.games_directory_response)
 
-    def _update_add(self):
+    @Gtk.Template.Callback()
+    def system_entry_changed(self, *args):
         system_name = self.system_name_entry.get_text()
         games_directory = self.games_directory_entry.get_text()
-        self.add_system_button.set_sensitive(
+        self.add_system_btn.set_sensitive(
             not SystemConfig.system_exists(system_name) and
             not system_name.startswith(' ') and
             not system_name.endswith(' ') and
@@ -53,14 +54,6 @@ class AddSystemWindow(Adw.Window):
         sc.save()
         self.emit('add_system', system_name)
         self.close()
-
-    @Gtk.Template.Callback()
-    def system_name_changed(self, *args):
-        self._update_add()
-
-    @Gtk.Template.Callback()
-    def games_directory_changed(self, *args):
-        self._update_add()
 
     @Gtk.Template.Callback()
     def choose_games_directory_clicked(self, *args):
