@@ -11,6 +11,8 @@ class SystemPreferences(Adw.PreferencesWindow):
     launch_command_entry = Gtk.Template.Child()
     emulator_command_entry = Gtk.Template.Child()
     games_directory_entry = Gtk.Template.Child()
+    thumbnail_width_spbtn = Gtk.Template.Child()
+    thumbnail_height_spbtn = Gtk.Template.Child()
     extension_group = Gtk.Template.Child()
     empty_extension_row = Gtk.Template.Child()
     extension_rows = []
@@ -18,6 +20,11 @@ class SystemPreferences(Adw.PreferencesWindow):
     def __init__(self, config, **kwargs):
         super().__init__(**kwargs)
         self.config = config
+
+        thumbnail_size = self.config.get_image_thumbnail_size()
+        self.thumbnail_width_spbtn.set_value(thumbnail_size[0])
+        self.thumbnail_height_spbtn.set_value(thumbnail_size[1])
+
         self.launch_command_entry.set_text(' '.join(self.config.get_launch_command()))
         self.emulator_command_entry.set_text(' '.join(self.config.get_emulator_command()))
         self.games_directory_entry.set_text(self.config.get_games_dir())
@@ -60,6 +67,11 @@ class SystemPreferences(Adw.PreferencesWindow):
     @Gtk.Template.Callback()
     def choose_games_directory_clicked(self, *args):
         self.games_directory_chooser.show()
+
+    @Gtk.Template.Callback()
+    def thumbnail_size_changed(self, *args):
+        self.config.set_image_thumbnail_size(self.thumbnail_width_spbtn.get_value(), self.thumbnail_height_spbtn.get_value())
+        self.config.save()
 
     @Gtk.Template.Callback()
     def add_extension_clicked(self, *args):

@@ -42,10 +42,46 @@ template SystemPreferences : Adw.PreferencesWindow {
 
         Adw.PreferencesGroup image_group {
             title: _("Images");
-            description: _("Adjust each image size");
+            description: _("Adjust each image");
 
-            Adw.ActionRow {
-                title: _("Thumbnail Size");
+            Adw.ExpanderRow {
+                title: _("Thumbnail");
+
+                Adw.ActionRow {
+                    title: _("Width");
+                    subtitle: _("The width of the thumbnail");
+
+                    [suffix]
+                    Gtk.SpinButton thumbnail_width_spbtn {
+                        valign: center;
+                        vexpand: true;
+                        adjustment: Adjustment {
+                            lower: 1;
+                            upper: 1000;
+                            step-increment: 1;
+                        };
+                        update-policy: if_valid;
+                        value-changed => thumbnail_size_changed();
+                    }
+                }
+
+                Adw.ActionRow {
+                    title: _("Height");
+                    subtitle: _("The height of the thumbnail");
+
+                    [suffix]
+                    Gtk.SpinButton thumbnail_height_spbtn {
+                        valign: center;
+                        vexpand: true;
+                        adjustment: Adjustment {
+                            lower: 1;
+                            upper: 1000;
+                            step-increment: 1;
+                        };
+                        update-policy: if_valid;
+                        value-changed => thumbnail_size_changed();
+                    }
+                }
             }
         }
 
