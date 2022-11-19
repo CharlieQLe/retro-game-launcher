@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="retro-game-launcher">
 	<schema id="com.charlieqle.RetroGameLauncher" path="/com/charlieqle/RetroGameLauncher/">
+	    <key name="tgdb-api-key" type="s">
+	        <default>''</default>
+	    </key>
 	</schema>
 </schemalist>

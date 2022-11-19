@@ -50,19 +50,19 @@ class SystemBox(Gtk.Box):
         self.reload_views()
 
     @Gtk.Template.Callback()
-    def back_clicked(self, *args):
+    def on_go_back_btn_clicked(self, *args):
         self.on_closed()
 
     @Gtk.Template.Callback()
-    def refresh_clicked(self, *args):
+    def on_refresh_btn_clicked(self, *args):
         self.reload_views()
 
     @Gtk.Template.Callback()
-    def open_games_clicked(self, *args):
+    def on_open_games_btn_clicked(self, *args):
         Gtk.show_uri(self.window, GLib.filename_to_uri(self.system_config.get_games_dir()), Gdk.CURRENT_TIME)
 
     @Gtk.Template.Callback()
-    def open_emu_clicked(self, *args):
+    def on_open_emu_btn_clicked(self, *args):
         command = utility.environment_replace_command(self.system_config.get_emulator_command(), utility.environment_map())
         command.insert(0, '--host')
         command.insert(0, '/usr/bin/flatpak-spawn')

@@ -3,4 +3,16 @@ using Adw 1;
 
 template Preferences : Adw.PreferencesWindow {
     search-enabled: false;
+
+    Adw.PreferencesPage {
+        Adw.PreferencesGroup {
+            title: "TheGamesDB Settings";
+            description: "Settings for scraping from TheGamesDB";
+
+            Adw.EntryRow tgdb_key_entry {
+                title: "API Key";
+                changed => on_tgdb_key_entry_changed();
+            }
+        }
+    }
 }

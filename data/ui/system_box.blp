@@ -15,25 +15,25 @@ template SystemBox : Box {
         [start]
         Button go_back_btn {
             icon-name: "go-previous-symbolic";
-            clicked => back_clicked();
+            clicked => on_go_back_btn_clicked();
         }
 
         [start]
         Button refresh_btn {
             icon-name: "view-refresh-symbolic";
-            clicked => refresh_clicked();
+            clicked => on_refresh_btn_clicked();
         }
 
         [start]
         Button open_games_btn {
             icon-name: "folder-open-symbolic";
-            clicked => open_games_clicked();
+            clicked => on_open_games_btn_clicked();
         }
 
         [start]
         Button open_emu_btn {
             icon-name: "applications-games-symbolic";
-            clicked => open_emu_clicked();
+            clicked => on_open_emu_btn_clicked();
         }
 
         [end]
@@ -51,14 +51,20 @@ template SystemBox : Box {
             name: "recent";
             title: "Recently Played";
             icon-name: "media-playback-start-symbolic";
-            child: .GameView recent_view { };
+            child: .GameView recent_view {
+                none_title: "No games found";
+                none_description: "Start playing games!";
+            };
         }
 
         Adw.ViewStackPage {
             name: "all";
             title: "All Games";
             icon-name: "view-grid-symbolic";
-            child: .GameView all_view { };
+            child: .GameView all_view {
+                none_title: "No games found";
+                none_description: "Start adding games!";
+            };
         }
     }
 

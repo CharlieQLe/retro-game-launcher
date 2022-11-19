@@ -32,7 +32,20 @@ class AddSystemWindow(Adw.Window):
         self.games_directory_chooser.connect('response', self.games_directory_response)
 
     @Gtk.Template.Callback()
-    def system_entry_changed(self, *args):
+    def on_cancel_clicked(self, *args):
+        self.close()
+
+    @Gtk.Template.Callback()
+    def on_add_system_clicked(self, *args):
+        system_name = self.system_name_entry.get_text()
+        games_directory = self.games_directory_entry.get_text()
+        sc = SystemConfig(system_name, games_directory)
+        sc.save()
+        self.emit('add_system', system_name)
+        self.close()
+
+    @Gtk.Template.Callback()
+    def on_system_entry_changed(self, *args):
         system_name = self.system_name_entry.get_text()
         games_directory = self.games_directory_entry.get_text()
         self.add_system_btn.set_sensitive(
@@ -43,20 +56,7 @@ class AddSystemWindow(Adw.Window):
             os.path.isdir(games_directory))
 
     @Gtk.Template.Callback()
-    def cancel_clicked(self, *args):
-        self.close()
-
-    @Gtk.Template.Callback()
-    def add_system_clicked(self, *args):
-        system_name = self.system_name_entry.get_text()
-        games_directory = self.games_directory_entry.get_text()
-        sc = SystemConfig(system_name, games_directory)
-        sc.save()
-        self.emit('add_system', system_name)
-        self.close()
-
-    @Gtk.Template.Callback()
-    def choose_games_directory_clicked(self, *args):
+    def on_choose_games_directory_clicked(self, *args):
         self.games_directory_chooser.show()
 
     def games_directory_response(self, *args):

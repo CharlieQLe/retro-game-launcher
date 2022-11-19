@@ -56,6 +56,3 @@ def environment_replace_command(command, environment={}):
                     has_key = True
                     replaced[replaced.index(env)] = value
     return replaced
-
-def gsettings():
-    return Gio.Settings(schema_id=constants.app_id)

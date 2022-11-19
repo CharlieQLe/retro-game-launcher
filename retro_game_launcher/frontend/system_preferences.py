@@ -46,35 +46,35 @@ class SystemPreferences(Adw.PreferencesWindow):
         self.games_directory_chooser.connect('response', self.games_directory_response)
 
     @Gtk.Template.Callback()
-    def launch_command_changed(self, *args):
+    def on_launch_command_entry_changed(self, *args):
         launch_str = args[0].get_text()
         self.config.set_launch_command(launch_str.split(' '))
         self.config.save()
 
     @Gtk.Template.Callback()
-    def emulator_command_changed(self, *args):
+    def on_emulator_command_entry_changed(self, *args):
         emulator_str = args[0].get_text()
         self.config.set_emulator_command(emulator_str.split(' '))
         self.config.save()
 
     @Gtk.Template.Callback()
-    def games_directory_changed(self, *args):
+    def on_games_directory_entry_changed(self, *args):
         dir = args[0].get_text()
         if os.path.isdir(dir):
             self.config.set_games_dir(dir)
             self.config.save()
 
     @Gtk.Template.Callback()
-    def choose_games_directory_clicked(self, *args):
+    def on_choose_games_directory_clicked(self, *args):
         self.games_directory_chooser.show()
 
     @Gtk.Template.Callback()
-    def thumbnail_size_changed(self, *args):
+    def on_thumbnail_size_spbtn_value_changed(self, *args):
         self.config.set_image_thumbnail_size(self.thumbnail_width_spbtn.get_value(), self.thumbnail_height_spbtn.get_value())
         self.config.save()
 
     @Gtk.Template.Callback()
-    def add_extension_clicked(self, *args):
+    def on_add_extension_clicked(self, *args):
         ext = self.config.get_extensions()
         ext.append('')
         self.config.set_extensions(ext)

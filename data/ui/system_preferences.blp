@@ -12,12 +12,12 @@ template SystemPreferences : Adw.PreferencesWindow {
 
             Adw.EntryRow launch_command_entry {
                 title: _("Launch Command");
-                changed => launch_command_changed();
+                changed => on_launch_command_entry_changed();
             }
 
             Adw.EntryRow emulator_command_entry {
                 title: _("${EMULATOR}");
-                changed => emulator_command_changed();
+                changed => on_emulator_command_entry_changed();
             }
 
             Adw.ActionRow {
@@ -30,11 +30,11 @@ template SystemPreferences : Adw.PreferencesWindow {
             description: _("The parent directory for each game's folder");
             Adw.EntryRow games_directory_entry {
                 title: _("Games Directory");
-                changed => games_directory_changed();
+                changed => on_games_directory_entry_changed();
                 Gtk.Button {
                     valign: center;
                     icon-name: "folder-open-symbolic";
-                    clicked => choose_games_directory_clicked();
+                    clicked => on_choose_games_directory_clicked();
                     styles [ "flat" ]
                 }
             }
@@ -61,7 +61,7 @@ template SystemPreferences : Adw.PreferencesWindow {
                             step-increment: 1;
                         };
                         update-policy: if_valid;
-                        value-changed => thumbnail_size_changed();
+                        value-changed => on_thumbnail_size_spbtn_value_changed();
                     }
                 }
 
@@ -79,7 +79,7 @@ template SystemPreferences : Adw.PreferencesWindow {
                             step-increment: 1;
                         };
                         update-policy: if_valid;
-                        value-changed => thumbnail_size_changed();
+                        value-changed => on_thumbnail_size_spbtn_value_changed();
                     }
                 }
             }
@@ -90,7 +90,7 @@ template SystemPreferences : Adw.PreferencesWindow {
             description: _("The file extension for each ROM file");
             header-suffix: Gtk.Button {
                 valign: center;
-                clicked => add_extension_clicked();
+                clicked => on_add_extension_clicked();
                 styles [ "suggested-action" ]
                 child: Adw.ButtonContent {
                     icon-name: "list-add-symbolic";

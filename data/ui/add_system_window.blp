@@ -20,14 +20,14 @@ template AddSystemWindow : Adw.Window {
                 Button {
                     valign: center;
                     label: "Cancel";
-                    clicked => cancel_clicked();
+                    clicked => on_cancel_clicked();
                 }
 
                 [end]
                 Button add_system_btn {
                     valign: center;
                     label: "Add";
-                    clicked => add_system_clicked();
+                    clicked => on_add_system_clicked();
                     styles [ "suggested-action" ]
                 }
             }
@@ -46,17 +46,17 @@ template AddSystemWindow : Adw.Window {
 
                         Adw.EntryRow system_name_entry {
                             title: "System name";
-                            changed => system_entry_changed();
+                            changed => on_system_entry_changed();
                         }
 
                         Adw.EntryRow games_directory_entry {
                             title: "Games directory";
-                            changed => system_entry_changed();
+                            changed => on_system_entry_changed();
 
                             Button {
                                 valign: center;
                                 icon-name: "folder-open-symbolic";
-                                clicked => choose_games_directory_clicked();
+                                clicked => on_choose_games_directory_clicked();
 
                                 styles [ "flat" ]
                             }

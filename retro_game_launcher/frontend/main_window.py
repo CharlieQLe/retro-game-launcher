@@ -43,7 +43,7 @@ class MainWindow(Adw.ApplicationWindow):
             self.no_systems_found.show()
 
     @Gtk.Template.Callback()
-    def add_system_clicked(self, *args):
+    def on_add_system_clicked(self, *args):
         win = AddSystemWindow(application=self.get_application(), transient_for=self)
         win.connect('add_system', self._on_system_added)
         win.show()
