@@ -6,7 +6,12 @@ template SystemBox : Box {
     hexpand: true;
     vexpand: true;
 
-    Adw.HeaderBar header {
+    Adw.HeaderBar {
+        centering-policy: strict;
+        title-widget: Adw.ViewSwitcherTitle view_title {
+            stack: view_stack;
+        };
+
         [start]
         Button go_back_btn {
             icon-name: "go-previous-symbolic";
@@ -36,25 +41,30 @@ template SystemBox : Box {
             icon-name: "view-more-symbolic";
             menu-model: primary_menu;
         }
+
     }
 
-    Adw.StatusPage no_games_found {
-        hexpand: true;
+    Adw.ViewStack view_stack {
         vexpand: true;
-        title: "No games found";
-        description: "Add games and start playing!";
-        icon-name: "applications-system-symbolic";
+
+        Adw.ViewStackPage {
+            name: "recent";
+            title: "Recently Played";
+            icon-name: "media-playback-start-symbolic";
+            child: .GameView recent_view { };
+        }
+
+        Adw.ViewStackPage {
+            name: "all";
+            title: "All Games";
+            icon-name: "view-grid-symbolic";
+            child: .GameView all_view { };
+        }
     }
 
-    Gtk.ScrolledWindow games_found {
-        hexpand: true;
-        vexpand: true;
-        child: Gtk.GridView game_view {
-            enable-rubberband: false;
-            model: Gtk.NoSelection {
-                model: bind SystemBox.games;
-            };
-        };
+    Adw.ViewSwitcherBar {
+        stack: view_stack;
+        reveal: bind view_title.title-visible;
     }
 }
 

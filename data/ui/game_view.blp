@@ -1,0 +1,29 @@
+using Gtk 4.0;
+using Adw 1;
+
+template GameView : Gtk.Box {
+    hexpand: true;
+    vexpand: true;
+
+    Adw.StatusPage none_found {
+        hexpand: true;
+        vexpand: true;
+        visible: bind GameView.has_games inverted;
+        title: bind GameView.none_title;
+        description: bind GameView.none_description;
+        icon-name: bind GameView.none_icon_name;
+    }
+
+    Gtk.ScrolledWindow found {
+        hexpand: true;
+        vexpand: true;
+        visible: bind GameView.has_games;
+        child: Gtk.GridView model_view {
+            enable-rubberband: false;
+            factory: bind GameView.factory;
+            model: Gtk.NoSelection {
+                model: bind GameView.games;
+            };
+        };
+    }
+}
