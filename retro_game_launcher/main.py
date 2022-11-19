@@ -12,3 +12,4 @@ def main(version):
     # Run the application
     app = RetroGameLauncherApp()
     return app.run(sys.argv)
+

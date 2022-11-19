@@ -30,10 +30,7 @@ class GameView(Gtk.Box):
 
         super().__init__(**kwargs)
 
-        self.factory.connect('setup', self.on_factory_setup)
         self.factory.connect('bind', self.on_factory_bind)
-        self.factory.connect('unbind', self.on_factory_unbind)
-        self.factory.connect('teardown', self.on_factory_teardown)
 
     def set_system_config(self, system_config):
         self.system_config = system_config
@@ -46,9 +43,6 @@ class GameView(Gtk.Box):
 
     def set_none_icon_name(self, value):
         self.none_icon_name = value
-
-    def on_factory_setup(self, widget, item):
-        pass
 
     def on_factory_bind(self, widget, item):
         if self.system_config is None:
@@ -81,12 +75,6 @@ class GameView(Gtk.Box):
         item.set_activatable(False)
         item.set_child(game_item)
 
-    def on_factory_unbind(self, widget, item):
-        pass
-
-    def on_factory_teardown(self, widget, item):
-        pass
-
     def clear_games(self):
         self.games.remove_all()
         self.has_games = False
@@ -94,3 +82,10 @@ class GameView(Gtk.Box):
     def add_game(self, game: Game):
         self.games.append(game)
         self.has_games = True
+
+    def insert_game(self, position: int, game: Game):
+        self.games.insert(position, game)
+
+    def __len__(self) -> int:
+        return len(self.games)
+
