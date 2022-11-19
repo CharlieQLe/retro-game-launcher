@@ -15,11 +15,11 @@ class Settings:
 
     ### THEGAMESDB
 
-    def get_tgdb_api_key(self) -> str:
+    @property
+    def tgdb_api_key(self) -> str:
         return self.settings.get_string(setting_keys.TGDB_API_KEY)
 
-    def set_tgdb_api_key(self, key):
+    @tgdb_api_key.setter
+    def tgdb_api_key(self, key):
         self.settings.set_string(setting_keys.TGDB_API_KEY, key)
-
-    tgdb_api_key = property(get_tgdb_api_key, set_tgdb_api_key)
 
