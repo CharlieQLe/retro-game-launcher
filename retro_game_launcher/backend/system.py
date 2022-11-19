@@ -30,9 +30,9 @@ class SystemConfig:
     ###
 
     def __init__(self, system_name, games_directory=''):
-        self._name = system_name
-        self._config_path = os.path.join(utility.user_config_directory(), '%s.json' % system_name)
-        self._configuration = {
+        self.__name = system_name
+        self.__config_path = os.path.join(utility.user_config_directory(), '%s.json' % system_name)
+        self.__configuration = {
             'games_directory': games_directory,
             'emulator_command': [
                 'INSERT_COMMAND_HERE'
@@ -50,68 +50,76 @@ class SystemConfig:
                 }
             },
             'extensions': [],
+            'recent_games': [],
         }
 
     def reload(self):
-        with open(self._config_path, 'r') as f:
-            self._configuration = json.load(f)
+        with open(self.__config_path, 'r') as f:
+            self.__configuration = json.load(f)
 
     def save(self):
-        with open(self._config_path, 'w') as f:
-            json.dump(self._configuration, f, indent=4)
+        with open(self.__config_path, 'w') as f:
+            json.dump(self.__configuration, f, indent=4)
 
     ### PROPERTIES
 
+    @property
     def name(self):
-        return self._name
+        return self.__name
 
-    ### GETTERS
+    @property
+    def games_directory(self) -> str:
+        return self.__configuration['games_directory']
 
-    def get_games_dir(self):
-        return self._configuration['games_directory']
+    @games_directory.setter
+    def games_directory(self, directory: str):
+        self.__configuration['games_directory'] = directory
 
-    def get_extensions(self):
-        return self._configuration['extensions']
+    @property
+    def extensions(self) -> list:
+        return self.__configuration['extensions']
 
-    def get_emulator_command(self):
-        return self._configuration['emulator_command']
+    @extensions.setter
+    def extensions(self, extensions: list):
+        self.__configuration['extensions'] = extensions
 
-    def get_launch_command(self):
-        return self._configuration['launch_command']
+    @property
+    def emulator_command(self) -> list:
+        return self.__configuration['emulator_command']
 
-    def get_launch_vars(self):
-        return self._configuration['launch_vars']
+    @emulator_command.setter
+    def emulator_command(self, command: list) -> list:
+        self.__configuration['emulator_command'] = command
 
-    def get_image_thumbnail_size(self):
-        thumbnail = self._configuration['images']['thumbnail']
+    @property
+    def launch_command(self) -> list:
+        return self.__configuration['launch_command']
+
+    @launch_command.setter
+    def launch_command(self, command: list):
+        self.__configuration['launch_command'] = command
+
+    @property
+    def image_thumbnail_size(self) -> tuple:
+        thumbnail = self.__configuration['images']['thumbnail']
         return (thumbnail['width'], thumbnail['height'])
 
-    ### SETTERS
+    @image_thumbnail_size.setter
+    def image_thumbnail_size(self, size: tuple):
+        thumbnail = self.__configuration['images']['thumbnail']
+        thumbnail['width'] = size[0]
+        thumbnail['height'] = size[1]
 
-    def set_games_dir(self, games_directory):
-        self._configuration['games_directory'] = games_directory
+    @property
+    def recent_games(self) -> list:
+        return self.__configuration['recent_games']
 
-    def set_extensions(self, extensions):
-        self._configuration['extensions'] = extensions
-
-    def set_emulator_command(self, emulator_command):
-        self._configuration['emulator_command'] = emulator_command
-
-    def set_launch_command(self, launch_command):
-        self._configuration['launch_command'] = launch_command
-
-    def set_launch_var(self, key, value):
-        self._configuration['launch_vars'][key] = value
-
-    def set_image_thumbnail_size(self, width, height):
-        thumbnail = self._configuration['images']['thumbnail']
-        thumbnail['width'] = width
-        thumbnail['height'] = height
+    @recent_games.setter
+    def recent_games(self, games: list):
+        self.__configuration['recent_games'] = recent_games
 
     ### GAMES
 
     def get_game_subfolders(self):
-        dir = self.get_games_dir()
-        if not os.path.isdir(dir):
-            return []
-        return [ d for d in os.listdir(dir) if os.path.isdir(os.path.join(dir, d)) ]
+        dir = self.games_directory
+        return [ d for d in os.listdir(dir) if os.path.isdir(os.path.join(dir, d)) ] if os.path.isdir(dir) else []

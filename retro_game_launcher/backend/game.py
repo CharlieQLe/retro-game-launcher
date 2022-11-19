@@ -3,13 +3,14 @@ import subprocess
 import gi
 from gi.repository import GObject
 from retro_game_launcher.backend import utility
+from retro_game_launcher.backend.system import SystemConfig
 
 class Game(GObject.Object):
     __gtype_name__ = 'Game'
 
     process = None
 
-    def __init__(self, game_name, game_file_name, thumbnail_file_name, config):
+    def __init__(self, game_name, game_file_name, thumbnail_file_name, config: SystemConfig):
         GObject.Object.__init__(self)
         self.game_name = game_name
         self.game_file_name = game_file_name
@@ -17,7 +18,7 @@ class Game(GObject.Object):
         self.thumbnail_file_name = thumbnail_file_name
 
     def get_directory(self):
-        return os.path.join(self.config.get_games_dir(), self.game_name)
+        return os.path.join(self.config.games_directory, self.game_name)
 
     def get_game_path(self):
         return os.path.join(self.get_directory(), self.game_file_name)
@@ -32,7 +33,7 @@ class Game(GObject.Object):
             else:
                 self.process = None
         command = ['/usr/bin/flatpak-spawn', '--host']
-        for x in self.config.get_launch_command():
+        for x in self.config.launch_command:
             command.append(x)
         env = utility.environment_map(game_name=self.get_game_path())
         emulator_cmd = utility.environment_replace_command(self.config.get_emulator_command(), env)

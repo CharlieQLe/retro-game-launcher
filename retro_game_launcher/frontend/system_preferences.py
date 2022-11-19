@@ -3,6 +3,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, Gtk
+from retro_game_launcher.backend.system import SystemConfig
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/system_preferences.ui')
 class SystemPreferences(Adw.PreferencesWindow):
@@ -17,7 +18,7 @@ class SystemPreferences(Adw.PreferencesWindow):
     empty_extension_row = Gtk.Template.Child()
     extension_rows = []
 
-    def __init__(self, config, **kwargs):
+    def __init__(self, config: SystemConfig, **kwargs):
         super().__init__(**kwargs)
         self.config = config
 
@@ -25,10 +26,10 @@ class SystemPreferences(Adw.PreferencesWindow):
         self.thumbnail_width_spbtn.set_value(thumbnail_size[0])
         self.thumbnail_height_spbtn.set_value(thumbnail_size[1])
 
-        self.launch_command_entry.set_text(' '.join(self.config.get_launch_command()))
-        self.emulator_command_entry.set_text(' '.join(self.config.get_emulator_command()))
-        self.games_directory_entry.set_text(self.config.get_games_dir())
-        extensions = self.config.get_extensions()
+        self.launch_command_entry.set_text(' '.join(self.config.launch_command))
+        self.emulator_command_entry.set_text(' '.join(self.config.emulator_command))
+        self.games_directory_entry.set_text(self.config.games_directory)
+        extensions = self.config.extensions
         if len(extensions) == 0:
             self.empty_extension_row.show()
         else:
@@ -48,20 +49,20 @@ class SystemPreferences(Adw.PreferencesWindow):
     @Gtk.Template.Callback()
     def on_launch_command_entry_changed(self, *args):
         launch_str = args[0].get_text()
-        self.config.set_launch_command(launch_str.split(' '))
+        self.config.launch_command = launch_str.split(' ')
         self.config.save()
 
     @Gtk.Template.Callback()
     def on_emulator_command_entry_changed(self, *args):
         emulator_str = args[0].get_text()
-        self.config.set_emulator_command(emulator_str.split(' '))
+        self.config.emulator_command = emulator_str.split(' ')
         self.config.save()
 
     @Gtk.Template.Callback()
     def on_games_directory_entry_changed(self, *args):
         dir = args[0].get_text()
         if os.path.isdir(dir):
-            self.config.set_games_dir(dir)
+            self.config.games_directory = dir
             self.config.save()
 
     @Gtk.Template.Callback()
@@ -70,14 +71,14 @@ class SystemPreferences(Adw.PreferencesWindow):
 
     @Gtk.Template.Callback()
     def on_thumbnail_size_spbtn_value_changed(self, *args):
-        self.config.set_image_thumbnail_size(self.thumbnail_width_spbtn.get_value(), self.thumbnail_height_spbtn.get_value())
+        self.config.image_thumbnail_size = (self.thumbnail_width_spbtn.get_value(), self.thumbnail_height_spbtn.get_value())
         self.config.save()
 
     @Gtk.Template.Callback()
     def on_add_extension_clicked(self, *args):
-        ext = self.config.get_extensions()
-        ext.append('')
-        self.config.set_extensions(ext)
+        extensions = self.config.extensions
+        extensions.append('')
+        self.config.extensions = extensions
         self.config.save()
         self.add_extension_row()
         self.empty_extension_row.hide()
@@ -106,7 +107,7 @@ class SystemPreferences(Adw.PreferencesWindow):
             self.empty_extension_row.show()
 
     def save_extensions(self):
-        self.config.set_extensions([ row.get_text() for row in self.extension_rows ])
+        self.config.extensions = [ row.get_text() for row in self.extension_rows ]
         self.config.save()
 
     def games_directory_response(self, *args):

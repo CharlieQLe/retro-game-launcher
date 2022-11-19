@@ -59,11 +59,11 @@ class SystemBox(Gtk.Box):
 
     @Gtk.Template.Callback()
     def on_open_games_btn_clicked(self, *args):
-        Gtk.show_uri(self.window, GLib.filename_to_uri(self.system_config.get_games_dir()), Gdk.CURRENT_TIME)
+        Gtk.show_uri(self.window, GLib.filename_to_uri(self.system_config.games_directory), Gdk.CURRENT_TIME)
 
     @Gtk.Template.Callback()
     def on_open_emu_btn_clicked(self, *args):
-        command = utility.environment_replace_command(self.system_config.get_emulator_command(), utility.environment_map())
+        command = utility.environment_replace_command(self.system_config.emulator_command, utility.environment_map())
         command.insert(0, '--host')
         command.insert(0, '/usr/bin/flatpak-spawn')
         subprocess.Popen(command)
@@ -96,9 +96,10 @@ class SystemBox(Gtk.Box):
         if len(game_subfolders) == 0:
             return
 
-        extensions = self.system_config.get_extensions()
+        games_directory = self.system_config.games_directory
+        extensions = self.system_config.extensions
         for game_subfolder in game_subfolders:
-            game_subfolder_dir = os.path.join(self.system_config.get_games_dir(), game_subfolder)
+            game_subfolder_dir = os.path.join(games_directory, game_subfolder)
             game_subfolder_contents = os.listdir(game_subfolder_dir)
             game_files = list(filter(lambda file_name : any(file_name.endswith('.%s' % ext) for ext in extensions), game_subfolder_contents))
             if len(game_files) == 0:

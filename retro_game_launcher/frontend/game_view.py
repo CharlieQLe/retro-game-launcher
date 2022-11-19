@@ -48,6 +48,8 @@ class GameView(Gtk.Box):
         if self.system_config is None:
             return
 
+        thumbnail_size = self.system_config.image_thumbnail_size
+
         data = item.get_item()
 
         builder = Gtk.Builder.new_from_resource('/com/charlieqle/RetroGameLauncher/ui/game_item.ui')
@@ -58,7 +60,6 @@ class GameView(Gtk.Box):
         label_no_cover = builder.get_object('label_no_cover')
         game_name_label = builder.get_object('game_name_label')
         play_game_btn = builder.get_object('play_game_btn')
-        thumbnail_size = self.system_config.get_image_thumbnail_size()
         thumbnail_path = data.get_thumbnail_path()
         if thumbnail_path is None:
             thumbnail_img.hide()
