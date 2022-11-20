@@ -44,15 +44,13 @@ class SystemConfig:
                 'INSERT_OPTIONS_HERE',
                 '${GAME}'
             ],
-            'launch_vars': {},
             'images': {
                 'thumbnail': {
                     'width': 256,
                     'height': 256
                 }
             },
-            'extensions': [],
-            'recent_games': [],
+            'extensions': []
         }
 
     def reload(self):

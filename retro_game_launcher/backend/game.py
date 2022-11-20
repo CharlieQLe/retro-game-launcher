@@ -3,7 +3,7 @@ import subprocess
 import gi
 from gi.repository import GObject
 from retro_game_launcher.backend import utility
-from retro_game_launcher.backend.system import SystemConfig
+from retro_game_launcher.backend.config import SystemConfig
 
 class Game(GObject.Object):
     __gtype_name__ = 'Game'

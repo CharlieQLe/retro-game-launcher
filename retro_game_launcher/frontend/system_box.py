@@ -6,7 +6,7 @@ gi.require_version('Adw', '1')
 from gi.repository import Adw, Gdk, GdkPixbuf, Gio, GLib, Gtk, GObject
 import retro_game_launcher.backend.constants as constants
 from retro_game_launcher.backend import utility
-from retro_game_launcher.backend.system import SystemConfig
+from retro_game_launcher.backend.config import SystemConfig
 from retro_game_launcher.backend.game import Game
 from retro_game_launcher.frontend.system_preferences import SystemPreferences
 from retro_game_launcher.frontend.game_view import GameView

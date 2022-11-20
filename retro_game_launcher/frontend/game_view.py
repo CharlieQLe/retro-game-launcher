@@ -4,7 +4,7 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, GdkPixbuf, Gio, Gtk, GObject
 from retro_game_launcher.backend import utility
-from retro_game_launcher.backend.system import SystemConfig
+from retro_game_launcher.backend.config import SystemConfig
 from retro_game_launcher.backend.game import Game
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/game_view.ui')

@@ -2,7 +2,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, Gtk
-from retro_game_launcher.backend.system import SystemConfig
+from retro_game_launcher.backend.config import SystemConfig
 from retro_game_launcher.frontend.add_system_window import AddSystemWindow
 from retro_game_launcher.frontend.system_row import SystemRow
 from retro_game_launcher.frontend.system_box import SystemBox

@@ -3,7 +3,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, Gtk
-from retro_game_launcher.backend.system import SystemConfig
+from retro_game_launcher.backend.config import SystemConfig
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/system_preferences.ui')
 class SystemPreferences(Adw.PreferencesWindow):
