@@ -98,21 +98,15 @@ class SystemBox(Gtk.Box):
 
     def reload_views(self):
         self.all_view.clear_games()
-        game_subfolders = self.system_config.get_game_subfolders()
-        if len(game_subfolders) == 0:
+        for gm in self.system_config.load_games():
+            self.window.toast_overlay.add_toast(Adw.Toast(title=_('%s could not be loaded!' % gm)))
+
+        if len(self.system_config.games) == 0:
             return
 
-        games_directory = self.system_config.games_directory
-        extensions = self.system_config.extensions
-        for game_subfolder in game_subfolders:
-            game_subfolder_dir = os.path.join(games_directory, game_subfolder)
-            game_subfolder_contents = os.listdir(game_subfolder_dir)
-            game_files = list(filter(lambda file_name : any(file_name.endswith('.%s' % ext) for ext in extensions), game_subfolder_contents))
-            if len(game_files) == 0:
-                continue
-            cover_files = list(filter(lambda file_name : any(file_name.endswith('.%s' % ext) for ext in constants.cover_extensions), game_subfolder_contents))
+        for game in self.system_config.games:
             self.all_view.add_game(Game(
-                game_name=game_subfolder,
-                game_file_name=game_files[0],
-                thumbnail_file_name=cover_files[0] if len(cover_files) > 0 else None,
+                game_name=game.name,
+                game_file_name=game.rom_path,
+                thumbnail_file_name=game.thumbnail_path,
                 config=self.system_config))

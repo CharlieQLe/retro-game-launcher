@@ -21,6 +21,7 @@ class SystemPreferences(Adw.PreferencesWindow):
     def __init__(self, config: SystemConfig, **kwargs):
         super().__init__(**kwargs)
         self.config = config
+        self.extension_rows = []
 
         thumbnail_size = self.config.image_thumbnail_size
         self.thumbnail_width_spbtn.set_value(thumbnail_size[0])

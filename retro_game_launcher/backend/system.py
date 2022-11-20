@@ -2,10 +2,11 @@ import json
 import os
 import sys
 from retro_game_launcher.backend import utility
+from retro_game_launcher.backend import constants
 
 class SystemConfig:
     @staticmethod
-    def load(system_name):
+    def load(system_name: str):
         if not SystemConfig.system_exists(system_name):
             return None
         sc = SystemConfig(system_name)
@@ -13,25 +14,26 @@ class SystemConfig:
         return sc
 
     @staticmethod
-    def delete(system_name):
+    def delete(system_name: str) -> bool:
         if not SystemConfig.system_exists(system_name):
             return False
         os.remove(os.path.join(utility.user_config_directory(), '%s.json' % system_name))
         return True
 
     @staticmethod
-    def get_system_names():
+    def get_system_names() -> list:
         return [f[:-5] for f in os.listdir(utility.user_config_directory()) if not os.path.isdir(f) and f.endswith('.json') and len(f) > 5]
 
     @staticmethod
-    def system_exists(system_name):
+    def system_exists(system_name: str) -> bool:
         return system_name in SystemConfig.get_system_names()
 
     ###
 
-    def __init__(self, system_name, games_directory=''):
+    def __init__(self, system_name: str, games_directory=''):
         self.__name = system_name
         self.__config_path = os.path.join(utility.user_config_directory(), '%s.json' % system_name)
+        self.__games = []
         self.__configuration = {
             'games_directory': games_directory,
             'emulator_command': [
@@ -64,7 +66,7 @@ class SystemConfig:
     ### PROPERTIES
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.__name
 
     @property
@@ -111,15 +113,70 @@ class SystemConfig:
         thumbnail['height'] = size[1]
 
     @property
-    def recent_games(self) -> list:
-        return self.__configuration['recent_games']
-
-    @recent_games.setter
-    def recent_games(self, games: list):
-        self.__configuration['recent_games'] = recent_games
+    def games(self) -> list:
+        return self.__games
 
     ### GAMES
 
-    def get_game_subfolders(self):
+    def has_game(self, game_name: str) -> bool:
+        dir = self.games_directory
+        return game_name in os.listdir(dir) and os.path.isdir(os.path.join(dir, game_name))
+
+    def get_game_directory(self, game_name: str) -> str | None:
+        return os.path.join(self.games_directory, game_name) if self.has_game(game_name) else None
+
+    def get_game_subfolders(self) -> list:
         dir = self.games_directory
         return [ d for d in os.listdir(dir) if os.path.isdir(os.path.join(dir, d)) ] if os.path.isdir(dir) else []
+
+    def load_games(self) -> list:
+        self.__games = []
+        self.game_errors = []
+        for gm in self.get_game_subfolders():
+            try:
+                g = GameConfig(gm, self)
+                if not g.hidden:
+                    self.__games.append(g)
+            except:
+                self.game_errors.append(gm)
+        return self.game_errors
+
+class NoGameExists(Exception):
+    pass
+
+class GameConfig:
+    def __init__(self, game_name: str, system_config: SystemConfig):
+        self.__name = game_name
+        game_directory = system_config.get_game_directory(game_name)
+        if game_directory is None:
+            raise NoGameExists()
+        game_subfolder_contents = os.listdir(game_directory)
+
+        # Handle hidden
+        self.__hidden = 'hidden' in game_subfolder_contents
+
+        # Handle ROM
+        game_files = list(filter(lambda file_name : any(file_name.endswith('.%s' % ext) for ext in system_config.extensions), game_subfolder_contents))
+        if not self.__hidden and len(game_files) == 0:
+            raise NoGameExists()
+        self.__rom_path = os.path.join(game_directory, game_files[0]) if len(game_files) > 0 else None
+
+        # Handle thumbnail
+        thumbnail_files = list(filter(lambda file_name : any(file_name.endswith('.%s' % ext) for ext in constants.cover_extensions), game_subfolder_contents))
+        self.__thumbnail_path = thumbnail_files[0] if len(thumbnail_files) > 0 else None
+
+    @property
+    def name(self) -> str:
+        return self.__name
+
+    @property
+    def rom_path(self) -> str:
+        return self.__rom_path
+
+    @property
+    def thumbnail_path(self) -> str | None:
+        return self.__thumbnail_path
+
+    @property
+    def hidden(self) -> bool:
+        return self.__hidden
