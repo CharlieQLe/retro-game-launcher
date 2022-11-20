@@ -19,18 +19,8 @@ class MainWindow(Adw.ApplicationWindow):
     home = Gtk.Template.Child()
     system_map = {}
 
-    def __init__(self, **kwargs):
+    def __init__(self, arg_system, **kwargs):
         super().__init__(**kwargs)
-
-        # Remove existing systems
-        for system_name in self.system_map:
-            box = self.system_map[system_name]['box']
-            row = self.system_map[system_name]['row']
-            if box is not None:
-                self.leaflet.remove(box)
-            if row is not None:
-                self.system_list.remove(row)
-        self.system_map = {}
 
         system_names = SystemConfig.get_system_names()
         if len(system_names) > 0:
@@ -41,6 +31,9 @@ class MainWindow(Adw.ApplicationWindow):
         else:
             self.systems_found.hide()
             self.no_systems_found.show()
+
+        if arg_system is not None and arg_system in system_names:
+            self._open_system_page(arg_system, only_system=True)
 
     @Gtk.Template.Callback()
     def on_add_system_clicked(self, *args):
@@ -77,9 +70,9 @@ class MainWindow(Adw.ApplicationWindow):
     def _open_system(self, *args):
         self._open_system_page(args[0].system_name)
 
-    def _open_system_page(self, system_name):
+    def _open_system_page(self, system_name, only_system=False):
         if self.system_map[system_name]['box'] is None:
-            box = SystemBox(system_name, self.get_application(), self)
+            box = SystemBox(system_name, self.get_application(), self, only_system=only_system)
             box.connect('closed', self._close_system_page)
             box.connect('deleted', self._on_system_deleted)
             self.leaflet.append(box)

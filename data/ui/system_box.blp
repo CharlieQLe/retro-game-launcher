@@ -1,6 +1,30 @@
 using Gtk 4.0;
 using Adw 1;
 
+Gtk.Popover pop_menu {
+    styles [ "menu" ]
+
+    Gtk.Box {
+        orientation: vertical;
+        margin-top: 6;
+        margin-bottom: 6;
+        margin-start: 6;
+        margin-end: 6;
+
+        Gtk.Button manage_btn {
+            label: _("Manage System");
+
+            styles [ "flat", "body" ]
+        }
+
+        Gtk.Button delete_btn {
+            label: _("Delete System");
+
+            styles [ "flat", "body" ]
+        }
+    }
+}
+
 template SystemBox : Box {
     orientation: vertical;
     hexpand: true;
@@ -8,8 +32,8 @@ template SystemBox : Box {
 
     Adw.HeaderBar {
         centering-policy: strict;
-        title-widget: Adw.ViewSwitcherTitle view_title {
-            stack: view_stack;
+        title-widget: Adw.WindowTitle {
+            title: bind SystemBox.system_name;
         };
 
         [start]
@@ -39,38 +63,14 @@ template SystemBox : Box {
         [end]
         MenuButton {
             icon-name: "view-more-symbolic";
-            menu-model: primary_menu;
+            popover: pop_menu;
         }
 
     }
 
-    Adw.ViewStack view_stack {
-        vexpand: true;
-
-        Adw.ViewStackPage {
-            name: "recent";
-            title: "Recently Played";
-            icon-name: "media-playback-start-symbolic";
-            child: .GameView recent_view {
-                none_title: "No games found";
-                none_description: "Start playing games!";
-            };
-        }
-
-        Adw.ViewStackPage {
-            name: "all";
-            title: "All Games";
-            icon-name: "view-grid-symbolic";
-            child: .GameView all_view {
-                none_title: "No games found";
-                none_description: "Start adding games!";
-            };
-        }
-    }
-
-    Adw.ViewSwitcherBar {
-        stack: view_stack;
-        reveal: bind view_title.title-visible;
+    .GameView all_view {
+        none_title: "No games found";
+        none_description: "Start adding games!";
     }
 }
 

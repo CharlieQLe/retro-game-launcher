@@ -19,23 +19,31 @@ class SystemBox(Gtk.Box):
         'deleted': (GObject.SIGNAL_RUN_FIRST, None, (str,))
     }
 
+    system_name = GObject.Property(type=str, default='')
+
     go_back_btn = Gtk.Template.Child()
     refresh_btn = Gtk.Template.Child()
-    recent_view = Gtk.Template.Child()
     all_view = Gtk.Template.Child()
+    pop_menu = Gtk.Template.Child()
+    manage_btn = Gtk.Template.Child()
+    delete_btn = Gtk.Template.Child()
 
-    def __init__(self, system_name, application, window, **kwargs):
+    def __init__(self, system_name, application, window, only_system=False, **kwargs):
         super().__init__(**kwargs)
 
         self.system_name = system_name
         self.application = application
         self.window = window
+
+        if only_system:
+            self.delete_btn.hide()
+            self.go_back_btn.hide()
+
         self.system_config = SystemConfig.load(system_name)
-        self.recent_view.set_system_config(self.system_config)
         self.all_view.set_system_config(self.system_config)
 
-        self.application.create_action('manage_system', self.manage_system)
-        self.application.create_action('delete_system', self.delete_system)
+        self.manage_btn.connect('clicked', self.manage_system)
+        self.delete_btn.connect('clicked', self.delete_system)
 
         self.delete_dialog = Adw.MessageDialog(
             modal=True,
@@ -69,16 +77,16 @@ class SystemBox(Gtk.Box):
         subprocess.Popen(command)
 
     def on_closed(self):
-        self.application.remove_action('app.manage_system')
-        self.application.remove_action('app.delete_system')
         self.emit('closed')
 
-    def manage_system(self, widget, _):
+    def manage_system(self, *args):
+        self.pop_menu.popdown()
         pref = SystemPreferences(config=self.system_config)
         pref.set_transient_for(self.window)
         pref.present()
 
-    def delete_system(self, widget, _):
+    def delete_system(self, *args):
+        self.pop_menu.popdown()
         self.delete_dialog.show()
 
     def delete_response(self, *args):
@@ -89,8 +97,6 @@ class SystemBox(Gtk.Box):
             self.delete_dialog.hide()
 
     def reload_views(self):
-        # TODO: Handle recent games
-
         self.all_view.clear_games()
         game_subfolders = self.system_config.get_game_subfolders()
         if len(game_subfolders) == 0:

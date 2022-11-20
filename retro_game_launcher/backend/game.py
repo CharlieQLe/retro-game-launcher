@@ -8,7 +8,7 @@ from retro_game_launcher.backend.system import SystemConfig
 class Game(GObject.Object):
     __gtype_name__ = 'Game'
 
-    process = None
+    __process = None
 
     def __init__(self, game_name, game_file_name, thumbnail_file_name, config: SystemConfig):
         GObject.Object.__init__(self)
@@ -27,16 +27,16 @@ class Game(GObject.Object):
         return None if self.thumbnail_file_name is None else os.path.join(self.get_directory(), self.thumbnail_file_name)
 
     def run(self):
-        if self.process is not None:
-            if self.process.poll() is None:
+        if self.__process is not None:
+            if self.__process.poll() is None:
                 return None
             else:
-                self.process = None
+                self.__process = None
         command = ['/usr/bin/flatpak-spawn', '--host']
         for x in self.config.launch_command:
             command.append(x)
         env = utility.environment_map(game_name=self.get_game_path())
-        emulator_cmd = utility.environment_replace_command(self.config.get_emulator_command(), env)
+        emulator_cmd = utility.environment_replace_command(self.config.emulator_command, env)
         cmd = utility.environment_replace_command(command, env)
         if '${EMULATOR}' not in cmd:
             return None
@@ -44,6 +44,6 @@ class Game(GObject.Object):
         cmd.remove('${EMULATOR}')
         for i in range(len(emulator_cmd)):
             cmd.insert(index + i, emulator_cmd[i])
-        self.process = subprocess.Popen(cmd)
-        return self.process
+        self.__process = subprocess.Popen(cmd)
+        return self.__process
 

@@ -1,21 +1,40 @@
 import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
-from gi.repository import Adw, Gio
+from gi.repository import Adw, Gio, GLib
 from retro_game_launcher.backend import constants
 from retro_game_launcher.frontend.main_window import MainWindow
 from retro_game_launcher.frontend.preferences import Preferences
 
 class RetroGameLauncherApp(Adw.Application):
+    arg_system = None
+
     def __init__(self):
-        super().__init__()
-        self.application_id = constants.app_id
+        super().__init__(application_id=constants.app_id)
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_pref_action)
-        self.connect('activate', self.on_activate)
+        self.add_main_option(
+            long_name='system',
+            short_name=ord('s'),
+            flags=GLib.OptionFlags.NONE,
+            arg=GLib.OptionArg.STRING,
+            description=_('Launch a system'),
+            arg_description=None)
 
-    def on_activate(self, app):
-        win = MainWindow(application = app)
+    def do_command_line(self, command):
+        commands = command.get_options_dict()
+
+        if commands.contains("system"):
+            self.arg_system = commands.lookup_value("system").get_string()
+
+        self.do_activate()
+        return 0
+
+
+    def do_activate(self):
+        win = MainWindow(
+            arg_system=self.arg_system,
+            application=self)
         win.present()
 
     def on_about_action(self, widget, _):

@@ -81,7 +81,7 @@ class SystemConfig:
 
     @extensions.setter
     def extensions(self, extensions: list):
-        self.__configuration['extensions'] = extensions
+        self.__configuration['extensions'] = list(dict.fromkeys(extensions))
 
     @property
     def emulator_command(self) -> list:

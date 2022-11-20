@@ -8,14 +8,15 @@ Gtk.Box game_item {
     margin-bottom: 15;
     margin-start: 10;
     margin-end: 10;
+    overflow: hidden;
     styles [ "card", "activatable" ]
 
     Gtk.Box thumbnail_box {
+
         Gtk.Picture thumbnail_img {
             content-fit: cover;
             hexpand: true;
             vexpand: true;
-            styles [ "card" ]
         }
 
         Gtk.Box no_cover_box {
@@ -32,7 +33,6 @@ Gtk.Box game_item {
                 justify: center;
                 styles [ "dim-label" ]
             }
-            styles [ "card" ]
         }
     }
 
@@ -55,10 +55,7 @@ Gtk.Box game_item {
 
         Gtk.Button play_game_btn {
             icon-name: "media-playback-start-symbolic";
-            styles [
-                "flat",
-                "circular"
-            ]
+            styles [ "flat" ]
         }
     }
 }

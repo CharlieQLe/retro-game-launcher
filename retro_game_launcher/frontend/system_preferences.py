@@ -22,7 +22,7 @@ class SystemPreferences(Adw.PreferencesWindow):
         super().__init__(**kwargs)
         self.config = config
 
-        thumbnail_size = self.config.get_image_thumbnail_size()
+        thumbnail_size = self.config.image_thumbnail_size
         self.thumbnail_width_spbtn.set_value(thumbnail_size[0])
         self.thumbnail_height_spbtn.set_value(thumbnail_size[1])
 
@@ -87,22 +87,21 @@ class SystemPreferences(Adw.PreferencesWindow):
         row = Adw.EntryRow(title="File extension")
         row.set_text(extension)
         row.connect('changed', self.extension_row_changed)
+        self.extension_rows.append(row)
+        self.extension_group.add(row)
         remove_btn = Gtk.Button(valign=Gtk.Align.CENTER, icon_name='user-trash-symbolic')
         remove_btn.add_css_class('destructive-action')
         remove_btn.connect('clicked', self.remove_extension_row_clicked)
         row.add_suffix(remove_btn)
-        self.extension_rows.append(row)
-        self.extension_group.add(row)
 
     def extension_row_changed(self, *args):
         self.save_extensions()
 
     def remove_extension_row_clicked(self, *args):
         row = args[0].get_parent().get_parent().get_parent()
-        if row in self.extension_rows:
-            self.extension_group.remove(row)
-            self.extension_rows.remove(row)
-            self.save_extensions()
+        self.extension_group.remove(row)
+        self.extension_rows.remove(row)
+        self.save_extensions()
         if len(self.extension_rows) == 0:
             self.empty_extension_row.show()
 
