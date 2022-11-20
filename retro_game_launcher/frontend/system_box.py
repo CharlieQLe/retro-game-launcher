@@ -71,9 +71,8 @@ class SystemBox(Gtk.Box):
 
     @Gtk.Template.Callback()
     def on_open_emu_btn_clicked(self, *args):
-        command = utility.environment_replace_command(self.system_config.emulator_command, utility.environment_map())
-        command.insert(0, '--host')
-        command.insert(0, '/usr/bin/flatpak-spawn')
+        command = self.system_config.get_substituted_emulator_command()
+        print(command)
         subprocess.Popen(command)
 
     def on_closed(self):

@@ -37,13 +37,17 @@ class SystemConfig:
         self.__configuration = {
             'games_directory': games_directory,
             'emulator_command': [
-                'INSERT_COMMAND_HERE'
+                '${CMD_EMULATOR}'
             ],
             'launch_command': [
-                '${EMULATOR}',
-                'INSERT_OPTIONS_HERE',
+                '${CMD_EMULATOR}',
                 '${GAME}'
             ],
+            'launch_var': {
+                'CMD_EMULATOR': [
+                    'INSERT_COMMAND_HERE'
+                ]
+            },
             'images': {
                 'thumbnail': {
                     'width': 256,
@@ -100,6 +104,14 @@ class SystemConfig:
         self.__configuration['launch_command'] = command
 
     @property
+    def launch_var(self) -> dict:
+        return self.__configuration['launch_var']
+
+    @launch_var.setter
+    def launch_var(self, var: dict):
+        self.__configuration['launch_var'] = var
+
+    @property
     def image_thumbnail_size(self) -> tuple:
         thumbnail = self.__configuration['images']['thumbnail']
         return (thumbnail['width'], thumbnail['height'])
@@ -138,6 +150,26 @@ class SystemConfig:
             except:
                 self.game_errors.append(gm)
         return self.game_errors
+
+    ### COMMANDS
+
+    def substitute_command(self, command, **kwargs):
+        env_map = utility.environment_map(**kwargs)
+        for key, value in self.launch_var.items():
+            env_map[key] = value
+        return utility.environment_replace_command(command, env_map)
+
+    def get_substituted_launch_command(self, **kwargs):
+        command = self.substitute_command(self.launch_command, **kwargs)
+        command.insert(0, '--host')
+        command.insert(0, '/usr/bin/flatpak-spawn')
+        return command
+
+    def get_substituted_emulator_command(self, **kwargs):
+        command = self.substitute_command(self.emulator_command, **kwargs)
+        command.insert(0, '--host')
+        command.insert(0, '/usr/bin/flatpak-spawn')
+        return command
 
 class NoGameExists(Exception):
     pass

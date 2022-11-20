@@ -25,6 +25,14 @@ template SystemPreferences : Adw.PreferencesWindow {
             }
         }
 
+        .DynamicPreferencesGroup launch_var_group {
+            title: _("Launch Variables");
+            description: _("Define launch variables for commands");
+            add-btn-icon-name: "list-add-symbolic";
+            add-btn-text: _("Add Variable");
+            empty-row-title: _("No variables found");
+        }
+
         Adw.PreferencesGroup {
             title: _("Games directory");
             description: _("The parent directory for each game's folder");
@@ -85,23 +93,12 @@ template SystemPreferences : Adw.PreferencesWindow {
             }
         }
 
-        Adw.PreferencesGroup extension_group {
+        .DynamicPreferencesGroup extension_group {
             title: _("Extensions");
             description: _("The file extension for each ROM file");
-            header-suffix: Gtk.Button {
-                valign: center;
-                clicked => on_add_extension_clicked();
-                styles [ "suggested-action" ]
-                child: Adw.ButtonContent {
-                    icon-name: "list-add-symbolic";
-                    label: _("Add Extension");
-                    use-underline: true;
-                };
-            };
-
-            Adw.ActionRow empty_extension_row {
-                title: _("No extensions found");
-            }
+            add-btn-icon-name: "list-add-symbolic";
+            add-btn-text: _("Add Extension");
+            empty-row-title: _("No extensions found");
         }
     }
 }

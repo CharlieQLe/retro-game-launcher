@@ -1,0 +1,19 @@
+using Gtk 4.0;
+using Adw 1;
+
+template DynamicPreferencesGroup : Adw.PreferencesGroup {
+    header-suffix: Gtk.Button {
+        valign: center;
+        clicked => on_add_clicked();
+        styles [ "suggested-action" ]
+        child: Adw.ButtonContent {
+            icon-name: bind DynamicPreferencesGroup.add-btn-icon-name;
+            label: bind DynamicPreferencesGroup.add-btn-text;
+            use-underline: true;
+        };
+    };
+
+    Adw.ActionRow empty_row {
+        title: bind DynamicPreferencesGroup.empty-row-title;
+    }
+}

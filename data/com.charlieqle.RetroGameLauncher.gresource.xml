@@ -9,5 +9,6 @@
     <file preprocess="xml-stripblanks">ui/system_preferences.ui</file>
     <file preprocess="xml-stripblanks">ui/game_item.ui</file>
     <file preprocess="xml-stripblanks">ui/game_view.ui</file>
+    <file preprocess="xml-stripblanks">ui/dynamic_preferences_group.ui</file>
   </gresource>
 </gresources>

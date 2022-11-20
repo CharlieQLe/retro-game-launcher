@@ -32,18 +32,6 @@ class Game(GObject.Object):
                 return None
             else:
                 self.__process = None
-        command = ['/usr/bin/flatpak-spawn', '--host']
-        for x in self.config.launch_command:
-            command.append(x)
-        env = utility.environment_map(game_name=self.get_game_path())
-        emulator_cmd = utility.environment_replace_command(self.config.emulator_command, env)
-        cmd = utility.environment_replace_command(command, env)
-        if '${EMULATOR}' not in cmd:
-            return None
-        index = cmd.index('${EMULATOR}')
-        cmd.remove('${EMULATOR}')
-        for i in range(len(emulator_cmd)):
-            cmd.insert(index + i, emulator_cmd[i])
-        self.__process = subprocess.Popen(cmd)
+        self.__process = subprocess.Popen(self.config.get_substituted_launch_command(GAME=self.get_game_path()))
         return self.__process
 
