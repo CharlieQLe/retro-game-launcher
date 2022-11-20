@@ -71,9 +71,7 @@ class SystemBox(Gtk.Box):
 
     @Gtk.Template.Callback()
     def on_open_emu_btn_clicked(self, *args):
-        command = self.system_config.get_substituted_emulator_command()
-        print(command)
-        subprocess.Popen(command)
+        subprocess.Popen(self.system_config.get_substituted_emulator_command())
 
     def on_closed(self):
         self.emit('closed')
