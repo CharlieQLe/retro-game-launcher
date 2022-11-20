@@ -24,6 +24,7 @@ class RetroGameLauncherApp(Adw.Application):
     def do_command_line(self, command):
         commands = command.get_options_dict()
 
+
         if commands.contains("system"):
             self.arg_system = commands.lookup_value("system").get_string()
 
