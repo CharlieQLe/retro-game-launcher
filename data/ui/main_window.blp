@@ -1,6 +1,34 @@
 using Gtk 4.0;
 using Adw 1;
 
+Gtk.Popover pop_menu {
+    styles [ "menu" ]
+
+    Gtk.Box {
+        orientation: vertical;
+        margin-top: 6;
+        margin-bottom: 6;
+        margin-start: 6;
+        margin-end: 6;
+
+        Gtk.Button {
+            label: _("Preferences");
+            has-frame: false;
+            clicked => on_pref_btn_clicked();
+
+            styles [ "body" ]
+        }
+
+        Gtk.Button {
+            label: _("About Retro Game Launcher");
+            has-frame: false;
+            clicked => on_about_btn_clicked();
+
+            styles [ "body" ]
+        }
+    }
+}
+
 template MainWindow : Adw.ApplicationWindow {
     title: "Retro Game Launcher";
     default-width: 800;
@@ -32,7 +60,7 @@ template MainWindow : Adw.ApplicationWindow {
                         [end]
                         MenuButton {
                             icon-name: "open-menu-symbolic";
-                            menu-model: primary_menu;
+                            popover: pop_menu;
                         }
                     }
 
@@ -68,18 +96,4 @@ template MainWindow : Adw.ApplicationWindow {
             }
         };
     };
-}
-
-menu primary_menu {
-    section {
-        item {
-            label: _("_Preferences");
-            action: "app.preferences";
-        }
-
-        item {
-            label: _("_About Retro Game Launcher");
-            action: "app.about";
-        }
-    }
 }

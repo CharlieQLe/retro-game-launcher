@@ -6,6 +6,7 @@ from retro_game_launcher.backend.config import SystemConfig
 from retro_game_launcher.frontend.add_system_window import AddSystemWindow
 from retro_game_launcher.frontend.system_row import SystemRow
 from retro_game_launcher.frontend.system_box import SystemBox
+from retro_game_launcher.frontend.preferences import Preferences
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/main_window.ui')
 class MainWindow(Adw.ApplicationWindow):
@@ -17,10 +18,11 @@ class MainWindow(Adw.ApplicationWindow):
     system_list = Gtk.Template.Child()
     leaflet = Gtk.Template.Child()
     home = Gtk.Template.Child()
-    system_map = {}
+    pop_menu = Gtk.Template.Child()
 
     def __init__(self, arg_system, **kwargs):
         super().__init__(**kwargs)
+        self.system_map = {}
 
         system_names = SystemConfig.get_system_names()
         if len(system_names) > 0:
@@ -40,6 +42,22 @@ class MainWindow(Adw.ApplicationWindow):
         win = AddSystemWindow(application=self.get_application(), transient_for=self)
         win.connect('add_system', self._on_system_added)
         win.show()
+
+    @Gtk.Template.Callback()
+    def on_pref_btn_clicked(self, *args):
+        self.pop_menu.popdown()
+        Preferences().present()
+
+    @Gtk.Template.Callback()
+    def on_about_btn_clicked(self, *args):
+        self.pop_menu.popdown()
+        Adw.AboutWindow(transient_for=self,
+                        application_name='Retro Game Launcher',
+                        application_icon='applications-games-symbolic',
+                        developer_name='Charlie Le',
+                        version='0.1.0',
+                        developers=['Charlie Le'],
+                        copyright='© 2022 Charlie Le').present()
 
     def add_system(self, system_name):
         row = SystemRow(system_name)

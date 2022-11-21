@@ -11,16 +11,20 @@ Gtk.Popover pop_menu {
         margin-start: 6;
         margin-end: 6;
 
-        Gtk.Button manage_btn {
+        Gtk.Button {
             label: _("Manage System");
+            has-frame: false;
+            clicked => on_manage_btn_clicked();
 
-            styles [ "flat", "body" ]
+            styles [ "body" ]
         }
 
         Gtk.Button delete_btn {
             label: _("Delete System");
+            has-frame: false;
+            clicked => on_delete_btn_clicked();
 
-            styles [ "flat", "body" ]
+            styles [ "body" ]
         }
     }
 }

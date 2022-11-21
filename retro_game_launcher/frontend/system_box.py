@@ -25,8 +25,6 @@ class SystemBox(Gtk.Box):
     refresh_btn = Gtk.Template.Child()
     all_view = Gtk.Template.Child()
     pop_menu = Gtk.Template.Child()
-    manage_btn = Gtk.Template.Child()
-    delete_btn = Gtk.Template.Child()
 
     def __init__(self, system_name, application, window, only_system=False, **kwargs):
         super().__init__(**kwargs)
@@ -42,9 +40,6 @@ class SystemBox(Gtk.Box):
         self.system_config = SystemConfig.load(system_name)
         self.all_view.set_system_config(self.system_config)
 
-        self.manage_btn.connect('clicked', self.manage_system)
-        self.delete_btn.connect('clicked', self.delete_system)
-
         self.delete_dialog = Adw.MessageDialog(
             modal=True,
             heading='Delete %s?' % system_name,
@@ -59,7 +54,7 @@ class SystemBox(Gtk.Box):
 
     @Gtk.Template.Callback()
     def on_go_back_btn_clicked(self, *args):
-        self.on_closed()
+        self.emit('closed')
 
     @Gtk.Template.Callback()
     def on_refresh_btn_clicked(self, *args):
@@ -73,22 +68,21 @@ class SystemBox(Gtk.Box):
     def on_open_emu_btn_clicked(self, *args):
         subprocess.Popen(self.system_config.get_substituted_emulator_command())
 
-    def on_closed(self):
-        self.emit('closed')
-
-    def manage_system(self, *args):
+    @Gtk.Template.Callback()
+    def on_manage_btn_clicked(self, *args):
         self.pop_menu.popdown()
         pref = SystemPreferences(config=self.system_config)
         pref.set_transient_for(self.window)
         pref.present()
 
-    def delete_system(self, *args):
+    @Gtk.Template.Callback()
+    def on_delete_btn_clicked(self, *args):
         self.pop_menu.popdown()
         self.delete_dialog.show()
 
     def delete_response(self, *args):
         if args[1] == 'delete':
-            self.on_closed()
+            self.emit('closed')
             self.emit('deleted', self.system_name)
         else:
             self.delete_dialog.hide()
