@@ -9,49 +9,74 @@ from retro_game_launcher.backend.game import Game
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/game_view.ui')
 class GameView(Gtk.Box):
-    __gtype_name__ = 'GameView'
+    """
+    The game view.
 
-    factory = GObject.Property(type=Gtk.SignalListItemFactory, default=None)
-    games = GObject.Property(type=Gio.ListStore, default=None)
-    has_games = GObject.Property(type=bool, default=False)
-    none_title = GObject.Property(type=str, default="No games found")
-    none_description = GObject.Property(type=str, default="Add games!")
-    none_icon_name = GObject.Property(type=str, default="applications-games-symbolic")
+    Attributes:
+        factory (Gtk.SignalListItemFactory): The factory to generate the list items.
+        games (Gio.ListStore): The list store that stores the games.
+        has_games (bool): Determines if there are games or not.
+        none_title (str): The title of the no games status page.
+        none_description (str): The description of the no games status page.
+        none_icon_name (str): The icon name of the no games status page.
+        system_config (SystemConfig): The configuration of the system that this view belongs to.
+    """
+
+    __gtype_name__ = 'GameView'
 
     none_found = Gtk.Template.Child()
     found = Gtk.Template.Child()
     model_view = Gtk.Template.Child()
 
-    system_config = None
+    factory: Gtk.SignalListItemFactory = GObject.Property(type=Gtk.SignalListItemFactory, default=None)
+    games: Gio.ListStore = GObject.Property(type=Gio.ListStore, default=None)
+    has_games: bool = GObject.Property(type=bool, default=False)
+    none_title: str = GObject.Property(type=str, default='No games found')
+    none_description: str = GObject.Property(type=str, default='Add games!')
+    none_icon_name: str = GObject.Property(type=str, default='applications-games-symbolic')
 
-    def __init__(self, **kwargs):
-        self.factory = Gtk.SignalListItemFactory()
-        self.games = Gio.ListStore.new(Game)
-
+    def __init__(self, **kwargs) -> None:
+        """
+        Initialize this game view.
+        """
         super().__init__(**kwargs)
 
+        self.factory = Gtk.SignalListItemFactory()
         self.factory.connect('bind', self.on_factory_bind)
+        self.games = Gio.ListStore.new(Game)
+        self.__system_config: SystemConfig = None
 
-    def set_system_config(self, system_config):
-        self.system_config = system_config
+    def set_system_config(self, system_config: SystemConfig) -> None:
+        """
+        Set the system config.
 
-    def set_none_title(self, value):
-        self.none_title = value
+        Parameters:
+            system_config (SystemConfig): The configuration for the system this view is attached to.
+        """
+        self.__system_config = system_config
 
-    def set_none_description(self, value):
-        self.none_description = value
+    def on_factory_bind(self, factory: Gtk.SignalListItemFactory, item: Gtk.ListItem) -> None:
+        """
+        Handle all binds for the factory.
 
-    def set_none_icon_name(self, value):
-        self.none_icon_name = value
-
-    def on_factory_bind(self, widget, item):
-        if self.system_config is None:
-            return
-
-        thumbnail_size = self.system_config.image_thumbnail_size
+        Parameters:
+            factory (Gtk.SignalListItemFactory): The factory that emitted this signal.
+            item (Gtk.ListItem): The item that was bound.
+        """
+        thumbnail_size = self.__system_config.image_thumbnail_size
 
         data = item.get_item()
 
+        def run_game(button: Gtk.Button) -> None:
+            """
+            Handle running the game.
+
+            Parameters:
+                button (Gtk.Button): The button that was clicked
+            """
+            data.run()
+
+        # Create and retrieve the widgets
         builder = Gtk.Builder.new_from_resource('/com/charlieqle/RetroGameLauncher/ui/game_item.ui')
         game_item = builder.get_object('game_item')
         thumbnail_box = builder.get_object('thumbnail_box')
@@ -60,6 +85,9 @@ class GameView(Gtk.Box):
         label_no_cover = builder.get_object('label_no_cover')
         game_name_label = builder.get_object('game_name_label')
         play_game_btn = builder.get_object('play_game_btn')
+
+        # Handle the thumbnail_box
+        thumbnail_box.set_size_request(thumbnail_size[0], thumbnail_size[1])
         thumbnail_path = data.get_thumbnail_path()
         if thumbnail_path is None:
             thumbnail_img.hide()
@@ -67,26 +95,49 @@ class GameView(Gtk.Box):
             no_cover_box.hide()
             thumbnail_img.set_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size(thumbnail_path, thumbnail_size[0], thumbnail_size[1]))
 
+        # Set the text
         game_name_label.set_text(data.game_name)
 
-        play_game_btn.connect('clicked', lambda *args : data.run())
+        # Connect the signal
+        play_game_btn.connect('clicked', run_game)
 
-        thumbnail_box.set_size_request(thumbnail_size[0], thumbnail_size[1])
-
+        # Set the item
         item.set_activatable(False)
         item.set_child(game_item)
 
-    def clear_games(self):
+    def clear_games(self) -> None:
+        """
+        Clear all games from this view.
+        """
         self.games.remove_all()
         self.has_games = False
 
-    def add_game(self, game: Game):
+    def add_game(self, game: Game) -> None:
+        """
+        Add a game to this view.
+
+        Parameters:
+            game (Game): The game to add.
+        """
         self.games.append(game)
         self.has_games = True
 
-    def insert_game(self, position: int, game: Game):
+    def insert_game(self, position: int, game: Game) -> None:
+        """
+        Insert a game at the specified position within this view.
+
+        Parameters:
+            position (int): The position to insert at
+            game (Game): The game to add
+        """
         self.games.insert(position, game)
 
     def __len__(self) -> int:
+        """
+        Get the number of games in this view.
+
+        Returns:
+            int: The number of games
+        """
         return len(self.games)
 

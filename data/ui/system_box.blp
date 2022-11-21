@@ -69,24 +69,10 @@ template SystemBox : Box {
             icon-name: "view-more-symbolic";
             popover: pop_menu;
         }
-
     }
 
-    .GameView all_view {
+    .GameView game_view {
         none_title: "No games found";
         none_description: "Start adding games!";
-    }
-}
-
-menu primary_menu {
-    section {
-        item {
-            label: "Manage system";
-            action: "app.manage_system";
-        }
-        item {
-            label: "Delete system";
-            action: "app.delete_system";
-        }
     }
 }

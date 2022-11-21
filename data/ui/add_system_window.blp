@@ -13,18 +13,18 @@ template AddSystemWindow : Adw.Window {
             hexpand: true;
             vexpand: true;
 
-            Adw.HeaderBar header_bar {
+            Adw.HeaderBar {
                 decoration-layout: "";
 
                 [start]
-                Button {
+                Gtk.Button {
                     valign: center;
                     label: "Cancel";
                     clicked => on_cancel_clicked();
                 }
 
                 [end]
-                Button add_system_btn {
+                Gtk.Button add_system_btn {
                     valign: center;
                     label: "Add";
                     clicked => on_add_system_clicked();
@@ -33,7 +33,7 @@ template AddSystemWindow : Adw.Window {
             }
 
             Adw.Clamp {
-                child: Box {
+                child: Gtk.Box {
                     orientation: vertical;
                     margin-top: 24;
                     margin-bottom: 24;
@@ -53,10 +53,11 @@ template AddSystemWindow : Adw.Window {
                             title: "Games directory";
                             changed => on_system_entry_changed();
 
-                            Button {
+                            [suffix]
+                            Gtk.Button {
                                 valign: center;
                                 icon-name: "folder-open-symbolic";
-                                clicked => on_choose_games_directory_clicked();
+                                clicked => on_games_directory_chooser_clicked();
 
                                 styles [ "flat" ]
                             }

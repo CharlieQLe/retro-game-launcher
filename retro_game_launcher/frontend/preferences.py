@@ -6,17 +6,30 @@ from retro_game_launcher.backend.settings import Settings
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/preferences.ui')
 class Preferences(Adw.PreferencesWindow):
+    """
+    Handles preferences.
+
+    Attributes:
+        settings (Settings): Handles the settings for this application.
+    """
     __gtype_name__ = 'Preferences'
 
-    tgdb_key_entry = Gtk.Template.Child()
+    tgdb_key_entry: Adw.EntryRow = Gtk.Template.Child()
 
-    def __init__(self, **kargs):
+    def __init__(self, **kargs) -> None:
+        """
+        Initialize preferences.
+        """
         super().__init__(**kargs)
-
-        self.settings = Settings()
-
+        self.settings: Settings = Settings()
         self.tgdb_key_entry.set_text(self.settings.tgdb_api_key)
 
     @Gtk.Template.Callback()
-    def on_tgdb_key_entry_changed(self, *args):
+    def on_tgdb_key_entry_changed(self, entry: Adw.EntryRow) -> None:
+        """
+        Handle changing the entry for TheGamesDB API Key.
+
+        Parameters:
+            entry (Adw.EntryRow): The entry row that was changed.
+        """
         self.settings.tgdb_api_key = self.tgdb_key_entry.get_text()

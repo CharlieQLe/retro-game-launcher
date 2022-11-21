@@ -65,6 +65,7 @@ template MainWindow : Adw.ApplicationWindow {
                     }
 
                     Box no_systems_found {
+                        visible: bind MainWindow.has_systems inverted;
                         orientation: vertical;
 
                         Adw.StatusPage {
@@ -77,6 +78,7 @@ template MainWindow : Adw.ApplicationWindow {
                     }
 
                     Adw.Clamp systems_found {
+                        visible: bind MainWindow.has_systems;
                         child: Box {
                             orientation: vertical;
                             margin-top: 24;
