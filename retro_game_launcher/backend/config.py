@@ -6,7 +6,7 @@ from retro_game_launcher.backend import constants
 
 class SystemConfig:
     @staticmethod
-    def load(system_name: str) -> 'SystemConfig' | None:
+    def load(system_name: str) -> 'SystemConfig':
         """
         Load the system.
 
@@ -14,7 +14,7 @@ class SystemConfig:
             system_name (str): The name of the system.
 
         Returns:
-            SystemConfig | None: The config if one exists, None otherwise.
+            SystemConfig: The config if one exists, None otherwise.
         """
         if not SystemConfig.system_exists(system_name):
             return None
