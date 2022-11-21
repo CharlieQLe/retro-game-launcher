@@ -6,7 +6,16 @@ from retro_game_launcher.backend import constants
 
 class SystemConfig:
     @staticmethod
-    def load(system_name: str):
+    def load(system_name: str) -> 'SystemConfig' | None:
+        """
+        Load the system.
+
+        Parameters:
+            system_name (str): The name of the system.
+
+        Returns:
+            SystemConfig | None: The config if one exists, None otherwise.
+        """
         if not SystemConfig.system_exists(system_name):
             return None
         sc = SystemConfig(system_name)
@@ -15,22 +24,53 @@ class SystemConfig:
 
     @staticmethod
     def delete(system_name: str) -> bool:
+        """
+        Delete system.
+
+        Parameters:
+            system_name (str): The name of the system.
+
+        Returns:
+            bool: True if the system was deleted, false otherwise.
+        """
         if not SystemConfig.system_exists(system_name):
             return False
         os.remove(os.path.join(utility.user_config_directory(), '%s.json' % system_name))
         return True
 
     @staticmethod
-    def get_system_names() -> list:
+    def get_system_names() -> list[str]:
+        """
+        Get the system names.
+
+        Returns:
+            list[str]: The list of systems.
+        """
         return [f[:-5] for f in os.listdir(utility.user_config_directory()) if not os.path.isdir(f) and f.endswith('.json') and len(f) > 5]
 
     @staticmethod
     def system_exists(system_name: str) -> bool:
+        """
+        Check if the system exists.
+
+        Parameters:
+            system_name (str): The name of the system.
+
+        Returns:
+            bool: True if the system exists, false otherwise.
+        """
         return system_name in SystemConfig.get_system_names()
 
     ###
 
-    def __init__(self, system_name: str, games_directory=''):
+    def __init__(self, system_name: str, games_directory='') -> None:
+        """
+        Initialize the system.
+
+        Parameters:
+            system_name (str): The name of the system.
+            games_directory (str): The games directory.
+        """
         self.__name = system_name
         self.__config_path = os.path.join(utility.user_config_directory(), '%s.json' % system_name)
         self.__games = []
@@ -57,11 +97,17 @@ class SystemConfig:
             'extensions': []
         }
 
-    def reload(self):
+    def reload(self) -> None:
+        """
+        Reload the configuration.
+        """
         with open(self.__config_path, 'r') as f:
             self.__configuration = json.load(f)
 
-    def save(self):
+    def save(self) -> None:
+        """
+        Save the configuration.
+        """
         with open(self.__config_path, 'w') as f:
             json.dump(self.__configuration, f, indent=4)
 
@@ -69,77 +115,191 @@ class SystemConfig:
 
     @property
     def name(self) -> str:
+        """
+        Get the name of the system.
+
+        Returns:
+            str: The system name.
+        """
         return self.__name
 
     @property
     def games_directory(self) -> str:
+        """
+        Get the games directory.
+
+        Returns:
+            str: The games directory.
+        """
         return self.__configuration['games_directory']
 
     @games_directory.setter
-    def games_directory(self, directory: str):
+    def games_directory(self, directory: str) -> None:
+        """
+        Set the games directory.
+
+        Parameters:
+            directory (str): The directory to set.
+        """
         self.__configuration['games_directory'] = directory
 
     @property
-    def extensions(self) -> list:
+    def extensions(self) -> list[str]:
+        """
+        Get the extensions.
+
+        Returns:
+            list[str]: The extensions to get.
+        """
         return self.__configuration['extensions']
 
     @extensions.setter
-    def extensions(self, extensions: list):
+    def extensions(self, extensions: list[str]) -> None:
+        """
+        Set the extensions.
+
+        Parameters:
+            extensions (list[str]): The extensions to set.
+        """
         self.__configuration['extensions'] = list(dict.fromkeys(extensions))
 
     @property
-    def emulator_command(self) -> list:
+    def emulator_command(self) -> list[str]:
+        """
+        Get the emulator command.
+
+        Returns:
+            list[str]: The command to get.
+        """
         return self.__configuration['emulator_command']
 
     @emulator_command.setter
-    def emulator_command(self, command: list) -> list:
+    def emulator_command(self, command: list[str]) -> None:
+        """
+        Set the emulator command.
+
+        Parameters:
+            command (list[str]): The command to set.
+        """
         self.__configuration['emulator_command'] = command
 
     @property
-    def launch_command(self) -> list:
+    def launch_command(self) -> list[str]:
+        """
+        Get the launch command.
+
+        Returns:
+            list[str]: The command to get.
+        """
         return self.__configuration['launch_command']
 
     @launch_command.setter
-    def launch_command(self, command: list):
+    def launch_command(self, command: list[str]) -> None:
+        """
+        Set the launch command.
+
+        Parameters:
+            command (list[str]): The command to set.
+        """
         self.__configuration['launch_command'] = command
 
     @property
-    def launch_var(self) -> dict:
+    def launch_var(self) -> dict[str, str | list[str]]:
+        """
+        Get the environment variables.
+
+        Returns:
+            dict[str, str | list[str]]: The environment variables.
+        """
         return self.__configuration['launch_var']
 
     @launch_var.setter
-    def launch_var(self, var: dict):
+    def launch_var(self, var: dict[str, str | list[str]]) -> None:
+        """
+        Set the environment variables.
+
+        Parameters:
+            var (dict[str, str | list[str]]): The environment variables.
+        """
         self.__configuration['launch_var'] = var
 
     @property
-    def image_thumbnail_size(self) -> tuple:
+    def image_thumbnail_size(self) -> tuple[int, int]:
+        """
+        Get the image thumbnail size.
+
+        Returns:
+            tuple[int, int]: The size of the thumbnail.
+        """
         thumbnail = self.__configuration['images']['thumbnail']
         return (thumbnail['width'], thumbnail['height'])
 
     @image_thumbnail_size.setter
-    def image_thumbnail_size(self, size: tuple):
+    def image_thumbnail_size(self, size: tuple[int, int]) -> None:
+        """
+        Set the image thumbnail size.
+
+        Parameters:
+            size (tuple[int, int]): The size of the thumbnail.
+        """
         thumbnail = self.__configuration['images']['thumbnail']
         thumbnail['width'] = size[0]
         thumbnail['height'] = size[1]
 
     @property
-    def games(self) -> list:
+    def games(self) -> list['GameConfig']:
+        """
+        Get the currently loaded games.
+
+        Returns:
+            list[GameConfig]: The game configs.
+        """
         return self.__games
 
     ### GAMES
 
     def has_game(self, game_name: str) -> bool:
+        """
+        Check if the game exists.
+
+        Parameters:
+            game_name (str): The game name.
+
+        Returns:
+            bool: Whether or not the game exists.
+        """
         dir = self.games_directory
         return game_name in os.listdir(dir) and os.path.isdir(os.path.join(dir, game_name))
 
     def get_game_directory(self, game_name: str) -> str | None:
+        """
+        Get the directory path for the given game name.
+
+        Parameters:
+            game_name (str): The game name.
+
+        Returns:
+            str | None: The path to the game if it exists, otherwise None.
+        """
         return os.path.join(self.games_directory, game_name) if self.has_game(game_name) else None
 
-    def get_game_subfolders(self) -> list:
+    def get_game_subfolders(self) -> list[str]:
+        """
+        Get the subfolder names of the games under this system.
+
+        Returns:
+            list[str]: The subfolder names.
+        """
         dir = self.games_directory
         return [ d for d in os.listdir(dir) if os.path.isdir(os.path.join(dir, d)) ] if os.path.isdir(dir) else []
 
-    def load_games(self) -> list:
+    def load_games(self) -> list['GameConfig']:
+        """
+        Load games into the system, clearing all existing games.
+
+        Returns:
+            list['GameConfig']: All loaded games.
+        """
         self.__games = []
         self.game_errors = []
         for gm in self.get_game_subfolders():
@@ -153,29 +313,70 @@ class SystemConfig:
 
     ### COMMANDS
 
-    def substitute_command(self, command, **kwargs):
+    def substitute_command(self, command: list[str], **kwargs) -> list[str]:
+        """
+        Substitute the command.
+
+        Parameters:
+            command (list[str]): The command to substitute.
+
+        Returns:
+             list[str]: The command.
+        """
         env_map = utility.environment_map(**kwargs)
         for key, value in self.launch_var.items():
             env_map[key] = value
         return utility.environment_replace_command(command, env_map)
 
-    def get_substituted_launch_command(self, **kwargs):
+    def get_substituted_launch_command(self, **kwargs) -> list[str]:
+        """
+        Substitute the launch command.
+
+        Returns:
+             list[str]: The launch command.
+        """
         command = self.substitute_command(self.launch_command, **kwargs)
         command.insert(0, '--host')
         command.insert(0, '/usr/bin/flatpak-spawn')
         return command
 
-    def get_substituted_emulator_command(self, **kwargs):
+    def get_substituted_emulator_command(self, **kwargs) -> list[str]:
+        """
+        Substitute the emulator command.
+
+        Returns:
+             list[str]: The emulator command.
+        """
         command = self.substitute_command(self.emulator_command, **kwargs)
         command.insert(0, '--host')
         command.insert(0, '/usr/bin/flatpak-spawn')
         return command
 
 class NoGameExists(Exception):
+    """
+    Raise this for GameConfig.
+    """
     pass
 
 class GameConfig:
-    def __init__(self, game_name: str, system_config: SystemConfig):
+    """
+    The configuration for a game.
+
+    Read-Only Properties:
+        name (str): The name of the game.
+        rom_path (str): The path to the rom.
+        thumbnail_path (str): The path to the thumbnail.
+        hidden (bool): Whether or not the game should be ignored.
+    """
+
+    def __init__(self, game_name: str, system_config: SystemConfig) -> None:
+        """
+        Initialize the config.
+
+        Parameters:
+            game_name (str): The name of the game.
+            system_config (SystemConfig): The system configuration.
+        """
         self.__name = game_name
         game_directory = system_config.get_game_directory(game_name)
         if game_directory is None:
@@ -197,16 +398,40 @@ class GameConfig:
 
     @property
     def name(self) -> str:
+        """
+        Get the name of the game.
+
+        Returns:
+            str: The name of the game.
+        """
         return self.__name
 
     @property
     def rom_path(self) -> str:
+        """
+        Get the path to the ROM.
+
+        Returns:
+            str: The path to the ROM.
+        """
         return self.__rom_path
 
     @property
     def thumbnail_path(self) -> str | None:
+        """
+        Get the path to the thumbnail.
+
+        Returns:
+            str | None: The path to the thumbnail if it exists, otherwise return None.
+        """
         return self.__thumbnail_path
 
     @property
     def hidden(self) -> bool:
+        """
+        Get if this game is hidden.
+
+        Returns:
+            bool: Whether or not the game is hidden.
+        """
         return self.__hidden
