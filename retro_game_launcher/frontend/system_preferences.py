@@ -110,7 +110,7 @@ class SystemPreferences(Adw.PreferencesWindow):
             self.save_game_directories()
 
         def row_changed(row: DirectoryEntryRow) -> None:
-            self.__update_add_btn()
+            self.save_game_directories()
 
         def directory_found(row: DirectoryEntryRow, path: str) -> None:
             row.set_text(path)

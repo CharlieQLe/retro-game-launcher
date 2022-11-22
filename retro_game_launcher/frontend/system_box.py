@@ -80,16 +80,6 @@ class SystemBox(Gtk.Box):
         self.reload_game_view()
 
     @Gtk.Template.Callback()
-    def on_open_games_btn_clicked(self, button: Gtk.Button) -> None:
-        """
-        Handle opening the folder containing the games.
-
-        Parameters:
-            button (Gtk.Button): The button that was clicked
-        """
-        Gtk.show_uri(self.window, GLib.filename_to_uri(self.system_config.games_directory), Gdk.CURRENT_TIME)
-
-    @Gtk.Template.Callback()
     def on_open_emu_btn_clicked(self, button: Gtk.Button) -> None:
         """
         Handle opening the emulator.
