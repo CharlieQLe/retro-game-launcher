@@ -5,143 +5,8 @@ gi.require_version('Adw', '1')
 from gi.repository import Adw, Gtk, GObject
 from retro_game_launcher.backend.config import SystemConfig
 from retro_game_launcher.frontend.dynamic_preferences_group import DynamicPreferencesGroup, DynamicPreferencesRowFactory
-
-class CommandVarRow(Adw.ActionRow):
-    """
-    Handles a row with two entry fields.
-    """
-    __gtype_name__ = 'CommandVarRow'
-    __gsignals__ = {
-        'remove_clicked': (GObject.SIGNAL_RUN_FIRST, None, (Adw.PreferencesRow,)),
-        'key_value_changed': (GObject.SIGNAL_RUN_FIRST, None, (str,str))
-    }
-
-    def __init__(self) -> None:
-        """
-        Initialize the row.
-        """
-        super().__init__()
-
-        # Handle the remove button
-        remove_btn = Gtk.Button(valign=Gtk.Align.CENTER, icon_name='user-trash-symbolic')
-        remove_btn.add_css_class('destructive-action')
-        remove_btn.connect('clicked', self.on_remove_btn_clicked)
-        self.add_suffix(remove_btn)
-
-        # Create the box to hold the entries
-        box = Gtk.Box(hexpand=True, valign=Gtk.Align.CENTER)
-        box.add_css_class('linked')
-
-        # Create and connect the entries
-        self.key_entry = Gtk.Entry(placeholder_text=_('key'), hexpand=True, valign=Gtk.Align.CENTER)
-        self.value_entry = Gtk.Entry(placeholder_text=_('value'), hexpand=True, valign=Gtk.Align.CENTER)
-        self.key_entry.connect('changed', self.key_value_changed)
-        self.value_entry.connect('changed', self.key_value_changed)
-
-        # Add the entries to the box and add the box to the row
-        box.append(self.key_entry)
-        box.append(self.value_entry)
-        self.add_prefix(box)
-
-    @property
-    def key(self) -> str:
-        """
-        Get the key.
-
-        Returns:
-            str: The key to get.
-        """
-        return self.key_entry.get_text()
-
-    @key.setter
-    def key(self, key: str) -> None:
-        """
-        Set the key.
-
-        Parameters:
-            key (str): The key to set.
-        """
-        self.key_entry.set_text(key)
-
-    @property
-    def value(self) -> str:
-        """
-        Get the value.
-
-        Returns:
-            str: The value to get.
-        """
-        return self.value_entry.get_text()
-
-    @value.setter
-    def value(self, value: str) -> None:
-        """
-        Set the value.
-
-        Parameters:
-            value (str): The value to set.
-        """
-        self.value_entry.set_text(value)
-
-    def on_remove_btn_clicked(self, button: Gtk.Button) -> None:
-        """
-        Handle clicking the remove button.
-
-        Parameters:
-            button (Gtk.Button): The button that was clicked.
-        """
-        self.emit('remove_clicked', self)
-
-    def key_value_changed(self, _: Gtk.Entry) -> None:
-        """
-        Handles when the key or value was changed.
-
-        Parameters:
-            _ (Gtk.Entry): Unused
-        """
-        self.emit('key_value_changed', self.key_entry.get_text(), self.value_entry.get_text())
-
-class ExtensionRow(Adw.EntryRow):
-    """
-    Handles a row with two entry fields.
-    """
-    __gtype_name__ = 'ExtensionRow'
-    __gsignals__ = {
-        'remove_clicked': (GObject.SIGNAL_RUN_FIRST, None, (Adw.PreferencesRow,))
-    }
-
-    def __init__(self) -> None:
-        """
-        Initialize the row.
-        """
-        super().__init__(title='File extension', show_apply_button=True)
-        remove_btn = Gtk.Button(valign=Gtk.Align.CENTER, icon_name='user-trash-symbolic')
-        remove_btn.add_css_class('destructive-action')
-        remove_btn.connect('clicked', self.on_remove_btn_clicked)
-        self.add_suffix(remove_btn)
-
-    def on_remove_btn_clicked(self, button: Gtk.Button) -> None:
-        """
-        Handle clicking the remove button.
-
-        Parameters:
-            button (Gtk.Button): The button that was clicked.
-        """
-        self.emit('remove_clicked', self)
-
-class LaunchVarRowFactory(DynamicPreferencesRowFactory):
-    """
-    A factory that creates a CommandVarRow.
-    """
-    def create_row(self) -> CommandVarRow:
-        return CommandVarRow()
-
-class ExtensionRowFactory(DynamicPreferencesRowFactory):
-    """
-    A factory that creates an entry row.
-    """
-    def create_row(self) -> ExtensionRow:
-        return ExtensionRow()
+from retro_game_launcher.frontend.widgets.extension_row import ExtensionRow, ExtensionRowFactory
+from retro_game_launcher.frontend.widgets.key_value_row import KeyValueRow, KeyValueRowFactory
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/system_preferences.ui')
 class SystemPreferences(Adw.PreferencesWindow):
@@ -177,13 +42,13 @@ class SystemPreferences(Adw.PreferencesWindow):
         self.emulator_command_entry.set_text(' '.join(self.config.emulator_command))
         self.games_directory_entry.set_text(self.config.games_directory)
 
-        self.launch_var_group.set_factory(LaunchVarRowFactory())
+        self.launch_var_group.set_factory(KeyValueRowFactory())
         self.extension_group.set_factory(ExtensionRowFactory())
         self.launch_var_group.connect('row_added', self.on_launch_var_row_added)
         self.extension_group.connect('row_added', self.on_extension_row_added)
 
         for launch_key, launch_value in self.config.launch_var.items():
-            row = CommandVarRow()
+            row = KeyValueRow()
             row.key = launch_key
             row.value = ' '.join(launch_value) if launch_key.startswith('CMD_') else launch_value
             self.update_launch_var_row(row)
@@ -276,47 +141,51 @@ class SystemPreferences(Adw.PreferencesWindow):
 
     ### LAUNCH
 
-    def on_launch_var_row_added(self, group: DynamicPreferencesGroup, row: CommandVarRow) -> None:
+    def on_launch_var_row_added(self, group: DynamicPreferencesGroup, row: KeyValueRow) -> None:
         """
         Handle adding a command row.
 
         Parameters:
             group (DynamicPreferencesGroup): The parent of the row.
-            row (CommandVarRow): The added row.
+            row (KeyValueRow): The added row.
         """
         self.update_launch_var_row(row)
 
-    def update_launch_var_row(self, row: CommandVarRow):
+    def update_launch_var_row(self, row: KeyValueRow):
         """
         Handle updating a command row.
 
         Parameters:
-            row (CommandVarRow): The row to update.
+            row (KeyValueRow): The row to update.
         """
 
-        def row_removed(row: CommandVarRow, button: Gtk.Button) -> None:
+        def row_removed(button: Gtk.Button) -> None:
             """
             Handle the row removal.
 
             Parameters:
-                row (CommandVarRow): The row to remove.
+                row (KeyValueRow): The row to remove.
                 button (Gtk.Button): The button that was clicked.
             """
             self.launch_var_group.remove_row(row)
             self.save_launch_variables()
 
-        def row_changed(row: CommandVarRow, key: str, value: str) -> None:
+        def row_changed(row: KeyValueRow, key: str, value: str) -> None:
             """
             Handle the row changing.
 
             Parameters:
-                row (CommandVarRow): The row that was changed.
+                row (KeyValueRow): The row that was changed.
                 key (str): The key of the variable.
                 value (str): The value for the variable.
             """
             self.save_launch_variables()
 
-        row.connect('remove_clicked', row_removed)
+        remove_btn = Gtk.Button(valign=Gtk.Align.CENTER, icon_name='user-trash-symbolic')
+        remove_btn.add_css_class('destructive-action')
+        remove_btn.connect('clicked', row_removed)
+        row.add_suffix(remove_btn)
+
         row.connect('key_value_changed', row_changed)
 
     def save_launch_variables(self) -> None:

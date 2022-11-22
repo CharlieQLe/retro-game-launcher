@@ -24,6 +24,7 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
     Handle a dynamic preferences group.
 
     Attributes:
+        can_user_add (bool): Can users manually add rows.
         add_btn_icon_name (str): The name of the add button's icon.
         add_btn_text (str): The text of the add button's label.
         empty_row_title (str): The title of the empty row.
@@ -36,6 +37,7 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
 
     empty_row = Gtk.Template.Child()
 
+    can_user_add: bool = GObject.Property(type=bool, default=True)
     add_btn_icon_name: str = GObject.Property(type=str, default='')
     add_btn_text: str = GObject.Property(type=str, default='')
     empty_row_title: str = GObject.Property(type=str, default='')
