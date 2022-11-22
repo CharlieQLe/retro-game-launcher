@@ -43,9 +43,6 @@ class SystemPreferences(Adw.PreferencesWindow):
         self.games_directory_group.set_factory(DirectoryEntryRowFactory())
         self.launch_var_group.set_factory(KeyValueRowFactory())
         self.extension_group.set_factory(ExtensionRowFactory())
-        self.games_directory_group.connect('row-added', self.on_game_directory_row_added)
-        self.launch_var_group.connect('row-added', self.on_launch_var_row_added)
-        self.extension_group.connect('row-added', self.on_extension_row_added)
 
         for game_directory in self.config.game_directories:
             row = DirectoryEntryRow()
@@ -101,14 +98,15 @@ class SystemPreferences(Adw.PreferencesWindow):
 
     ### GAME DIRECTORIES
 
-    def on_game_directory_row_added(self, group: DynamicPreferencesGroup, row: DirectoryEntryRow) -> None:
+    @Gtk.Template.Callback()
+    def on_games_directory_row_added(self, group: DynamicPreferencesGroup, row: DirectoryEntryRow) -> None:
         self.update_game_directory_row(row)
 
-    def update_game_directory_row(self, row: DirectoryEntryRow) -> None:
-        def row_removed(button: Gtk.Button) -> None:
-            self.games_directory_group.remove_row(row)
-            self.save_game_directories()
+    @Gtk.Template.Callback()
+    def on_games_directory_row_removed(self, group: DynamicPreferencesGroup, row: DirectoryEntryRow) -> None:
+        self.save_game_directories()
 
+    def update_game_directory_row(self, row: DirectoryEntryRow) -> None:
         def row_changed(row: DirectoryEntryRow) -> None:
             self.save_game_directories()
 
@@ -117,10 +115,6 @@ class SystemPreferences(Adw.PreferencesWindow):
 
         row.set_title("Directory")
         row.set_transient_parent(self)
-        remove_btn = Gtk.Button(valign=Gtk.Align.CENTER, icon_name='user-trash-symbolic')
-        remove_btn.add_css_class('destructive-action')
-        remove_btn.connect('clicked', row_removed)
-        row.add_suffix(remove_btn)
         row.connect('changed', row_changed)
         row.connect('directory_found', directory_found)
 
@@ -130,6 +124,7 @@ class SystemPreferences(Adw.PreferencesWindow):
 
     ### LAUNCH
 
+    @Gtk.Template.Callback()
     def on_launch_var_row_added(self, group: DynamicPreferencesGroup, row: KeyValueRow) -> None:
         """
         Handle adding a command row.
@@ -140,24 +135,17 @@ class SystemPreferences(Adw.PreferencesWindow):
         """
         self.update_launch_var_row(row)
 
-    def update_launch_var_row(self, row: KeyValueRow):
+    @Gtk.Template.Callback()
+    def on_launch_var_row_removed(self, group: DynamicPreferencesGroup, row: KeyValueRow) -> None:
+        self.save_launch_variables()
+
+    def update_launch_var_row(self, row: KeyValueRow) -> None:
         """
-        Handle updating a command row.
+        Handle updating the launch var row.
 
         Parameters:
-            row (KeyValueRow): The row to update.
+            row (KeyValueRow): The row to remove.
         """
-
-        def row_removed(button: Gtk.Button) -> None:
-            """
-            Handle the row removal.
-
-            Parameters:
-                row (KeyValueRow): The row to remove.
-                button (Gtk.Button): The button that was clicked.
-            """
-            self.launch_var_group.remove_row(row)
-            self.save_launch_variables()
 
         def row_changed(row: KeyValueRow, key: str, value: str) -> None:
             """
@@ -169,11 +157,6 @@ class SystemPreferences(Adw.PreferencesWindow):
                 value (str): The value for the variable.
             """
             self.save_launch_variables()
-
-        remove_btn = Gtk.Button(valign=Gtk.Align.CENTER, icon_name='user-trash-symbolic')
-        remove_btn.add_css_class('destructive-action')
-        remove_btn.connect('clicked', row_removed)
-        row.add_suffix(remove_btn)
 
         row.connect('key_value_changed', row_changed)
 
@@ -194,6 +177,7 @@ class SystemPreferences(Adw.PreferencesWindow):
 
     ### EXTENSIONS
 
+    @Gtk.Template.Callback()
     def on_extension_row_added(self, group: DynamicPreferencesGroup, row: ExtensionRow) -> None:
         """
         Handle adding an extension row.
@@ -208,6 +192,10 @@ class SystemPreferences(Adw.PreferencesWindow):
         self.config.save()
         self.update_extension_row(row)
 
+    @Gtk.Template.Callback()
+    def on_extension_row_removed(self, group: DynamicPreferencesGroup, row: ExtensionRow) -> None:
+        self.save_extensions()
+
     def update_extension_row(self, row: ExtensionRow) -> None:
         """
         Update the extension row.
@@ -215,16 +203,6 @@ class SystemPreferences(Adw.PreferencesWindow):
         Parameters:
             row (ExtensionRow): The row to update.
         """
-        def row_removed(row: ExtensionRow, button: Gtk.Button) -> None:
-            """
-            Handle the row removal.
-
-            Parameters:
-                row (ExtensionRow): The row that emitted the signal.
-                button (Gtk.Button): The button that was clicked.
-            """
-            self.extension_group.remove_row(row)
-            self.save_extensions()
 
         def row_changed(row: ExtensionRow) -> None:
             """
@@ -235,7 +213,6 @@ class SystemPreferences(Adw.PreferencesWindow):
             """
             self.save_extensions()
 
-        row.connect('remove_clicked', row_removed)
         row.connect('changed', row_changed)
 
     def save_extensions(self) -> None:

@@ -32,7 +32,8 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
 
     __gtype_name__ = 'DynamicPreferencesGroup'
     __gsignals__ = {
-        'row_added': (GObject.SIGNAL_RUN_FIRST, None, (Adw.PreferencesRow,))
+        'row-added': (GObject.SIGNAL_RUN_FIRST, None, (Adw.PreferencesRow,)),
+        'row-removed': (GObject.SIGNAL_RUN_FIRST, None, (Adw.PreferencesRow,))
     }
 
     empty_row = Gtk.Template.Child()
@@ -63,7 +64,7 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
             return
         row = self.factory.create_row()
         self.add_row(row)
-        self.emit('row_added', row)
+        self.emit('row-added', row)
 
     def set_factory(self, factory: DynamicPreferencesRowFactory) -> None:
         """
@@ -100,6 +101,7 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
                 self.empty_row.hide()
             else:
                 self.empty_row.show()
+            self.emit('row-removed', row)
             return True
         return False
 
@@ -115,6 +117,23 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
         """
         if row in self.rows:
             return False
+
+        if self.can_user_add:
+            def row_removed(button: Gtk.Button) -> None:
+                """
+                Handle the row removal.
+
+                Parameters:
+                    row (KeyValueRow): The row to remove.
+                    button (Gtk.Button): The button that was clicked.
+                """
+                self.remove_row(row)
+
+            remove_btn = Gtk.Button(valign=Gtk.Align.CENTER, icon_name='user-trash-symbolic')
+            remove_btn.add_css_class('destructive-action')
+            remove_btn.connect('clicked', row_removed)
+            row.add_suffix(remove_btn)
+
         self.add(row)
         self.rows.append(row)
         self.empty_row.hide()

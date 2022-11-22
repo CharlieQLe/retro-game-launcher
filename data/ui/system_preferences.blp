@@ -31,6 +31,8 @@ template SystemPreferences : Adw.PreferencesWindow {
             add-btn-icon-name: "list-add-symbolic";
             add-btn-text: _("Add Variable");
             empty-row-title: _("No variables found");
+            row-added => on_launch_var_row_added();
+            row-removed => on_launch_var_row_removed();
         }
 
         .DynamicPreferencesGroup games_directory_group {
@@ -39,6 +41,8 @@ template SystemPreferences : Adw.PreferencesWindow {
             add-btn-icon-name: "list-add-symbolic";
             add-btn-text: _("Add Directory");
             empty-row-title: _("No directories found");
+            row-added => on_games_directory_row_added();
+            row-removed => on_games_directory_row_removed();
         }
 
         Adw.PreferencesGroup image_group {
@@ -92,6 +96,8 @@ template SystemPreferences : Adw.PreferencesWindow {
             add-btn-icon-name: "list-add-symbolic";
             add-btn-text: _("Add Extension");
             empty-row-title: _("No extensions found");
+            row-added => on_extension_row_added();
+            row-removed => on_extension_row_removed();
         }
     }
 }

@@ -71,9 +71,6 @@ class AddSystemWindow(Adw.Window):
 
     @Gtk.Template.Callback()
     def on_games_directory_row_added(self, group: DynamicPreferencesGroup, row: DirectoryEntryRow) -> None:
-        def row_removed(button: Gtk.Button) -> None:
-            self.games_directory_group.remove_row(row)
-
         def row_changed(row: DirectoryEntryRow) -> None:
             self.__update_add_btn()
 
@@ -82,10 +79,6 @@ class AddSystemWindow(Adw.Window):
 
         row.set_title("Directory")
         row.set_transient_parent(self)
-        remove_btn = Gtk.Button(valign=Gtk.Align.CENTER, icon_name='user-trash-symbolic')
-        remove_btn.add_css_class('destructive-action')
-        remove_btn.connect('clicked', row_removed)
-        row.add_suffix(remove_btn)
         row.connect('changed', row_changed)
         row.connect('directory_found', directory_found)
 
