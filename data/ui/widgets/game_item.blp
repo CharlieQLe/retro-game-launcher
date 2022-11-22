@@ -1,6 +1,6 @@
 using Gtk 4.0;
 
-Gtk.Box game_item {
+template GameItem : Gtk.Box {
     orientation: vertical;
     halign: center;
     valign: center;
@@ -13,12 +13,14 @@ Gtk.Box game_item {
 
     Gtk.Box thumbnail_box {
         Gtk.Picture thumbnail_img {
+            visible: bind GameItem.has-thumbnail;
             content-fit: cover;
             hexpand: true;
             vexpand: true;
         }
 
-        Gtk.Box no_cover_box {
+        Gtk.Box {
+            visible: bind GameItem.has-thumbnail inverted;
             orientation: vertical;
             hexpand: true;
             vexpand: true;
@@ -43,8 +45,8 @@ Gtk.Box game_item {
         margin-top: 10;
         margin-bottom: 10;
 
-        Gtk.Label game_name_label {
-            label: "GAME_NAME";
+        Gtk.Label {
+            label: bind GameItem.game_name;
             max-width-chars: 1;
             ellipsize: end;
             xalign: 0.0;
@@ -52,8 +54,9 @@ Gtk.Box game_item {
             styles [ "heading" ]
         }
 
-        Gtk.Button play_game_btn {
+        Gtk.Button {
             icon-name: "media-playback-start-symbolic";
+            clicked => on_play_btn_clicked();
             styles [ "flat" ]
         }
     }
