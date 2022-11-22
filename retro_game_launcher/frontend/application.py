@@ -35,7 +35,6 @@ class RetroGameLauncherApp(Adw.Application):
     def on_handle_local_options(self, application, options) -> int:
         if options.contains("system"):
             self.arg_system = options.lookup_value("system").get_string()
-            print('found system')
         return -1
 
     def on_activate(self, application):
