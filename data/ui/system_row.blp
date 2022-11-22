@@ -2,13 +2,10 @@ using Gtk 4.0;
 using Adw 1;
 
 template SystemRow : Adw.ActionRow {
-    activatable-widget: open_button;
+    activatable: true;
+    activated => on_activated();
 
-    Gtk.Button open_button {
-        valign: center;
+    Gtk.Image {
         icon-name: "go-next-symbolic";
-        clicked => open_clicked();
-
-        styles [ "flat" ]
     }
 }

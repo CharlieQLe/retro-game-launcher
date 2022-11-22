@@ -31,12 +31,12 @@ class SystemRow(Adw.ActionRow):
         self.system_name = system_name
 
     @Gtk.Template.Callback()
-    def open_clicked(self, button: Gtk.Button) -> None:
+    def on_activated(self, row: 'SystemRow') -> None:
         """
         Handle opening the system.
 
         Parameters:
-            button (Gtk.Button): The button that was clicked
+            row (SystemRow): This row.
         """
         self.emit('open_system')
 
