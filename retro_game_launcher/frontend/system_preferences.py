@@ -7,6 +7,7 @@ from retro_game_launcher.backend.config import SystemConfig
 from retro_game_launcher.frontend.dynamic_preferences_group import DynamicPreferencesGroup, DynamicPreferencesRowFactory
 from retro_game_launcher.frontend.widgets.extension_row import ExtensionRow, ExtensionRowFactory
 from retro_game_launcher.frontend.widgets.key_value_row import KeyValueRow, KeyValueRowFactory
+from retro_game_launcher.frontend.widgets.directory_entry_row import DirectoryEntryRow, DirectoryEntryRowFactory
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/system_preferences.ui')
 class SystemPreferences(Adw.PreferencesWindow):
@@ -19,33 +20,38 @@ class SystemPreferences(Adw.PreferencesWindow):
     launch_command_entry = Gtk.Template.Child()
     emulator_command_entry = Gtk.Template.Child()
     launch_var_group = Gtk.Template.Child()
-    games_directory_entry = Gtk.Template.Child()
+    games_directory_group = Gtk.Template.Child()
     thumbnail_width_spbtn = Gtk.Template.Child()
     thumbnail_height_spbtn = Gtk.Template.Child()
     extension_group = Gtk.Template.Child()
 
-    def __init__(self, config: SystemConfig, transient_parent: Gtk.Widget) -> None:
+    def __init__(self, config: SystemConfig) -> None:
         """
         Initialize the preferences.
 
         Parameters:
             config (SystemConfig): The config for the system.
-            transient_parent (Gtk.Widget): The transient parent of this window.
         """
         super().__init__()
+
         self.config = config
-        self.set_transient_for(transient_parent)
         thumbnail_size = self.config.image_thumbnail_size
         self.thumbnail_width_spbtn.set_value(thumbnail_size[0])
         self.thumbnail_height_spbtn.set_value(thumbnail_size[1])
         self.launch_command_entry.set_text(' '.join(self.config.launch_command))
         self.emulator_command_entry.set_text(' '.join(self.config.emulator_command))
-        self.games_directory_entry.set_text(self.config.games_directory)
-
+        self.games_directory_group.set_factory(DirectoryEntryRowFactory())
         self.launch_var_group.set_factory(KeyValueRowFactory())
         self.extension_group.set_factory(ExtensionRowFactory())
-        self.launch_var_group.connect('row_added', self.on_launch_var_row_added)
-        self.extension_group.connect('row_added', self.on_extension_row_added)
+        self.games_directory_group.connect('row-added', self.on_game_directory_row_added)
+        self.launch_var_group.connect('row-added', self.on_launch_var_row_added)
+        self.extension_group.connect('row-added', self.on_extension_row_added)
+
+        for game_directory in self.config.game_directories:
+            row = DirectoryEntryRow()
+            row.set_text(game_directory)
+            self.update_game_directory_row(row)
+            self.games_directory_group.add_row(row)
 
         for launch_key, launch_value in self.config.launch_var.items():
             row = KeyValueRow()
@@ -83,52 +89,6 @@ class SystemPreferences(Adw.PreferencesWindow):
         self.config.save()
 
     @Gtk.Template.Callback()
-    def on_games_directory_entry_changed(self, row: Adw.EntryRow) -> None:
-        """
-        Handle the games directory entry changing.
-
-        Parameters:
-            row (Adw.EntryRow): The row that was changed.
-        """
-        dir = row.get_text()
-        if os.path.isdir(dir):
-            self.config.games_directory = dir
-            self.config.save()
-
-    @Gtk.Template.Callback()
-    def on_choose_games_directory_clicked(self, button: Gtk.Button) -> None:
-        """
-        Handle opening the file chooser for the games directory.
-
-        Parameters:
-            button (Gtk.Button): The button that was clicked.
-        """
-        def file_chooser_response(file_chooser: Gtk.FileChooserNative, response: Gtk.ResponseType) -> None:
-            """
-            Handle the response from the file chooser.
-
-            Parameters:
-                file_chooser (Gtk.FileChooserNative): The file chooser that emitted the response.
-                response (Gtk.ResponseType): The response type.
-            """
-            if response == Gtk.ResponseType.ACCEPT:
-                file = file_chooser.get_file()
-                path = file.get_path()
-                if path is not None:
-                    self.games_directory_entry.set_text(path)
-
-        file_chooser = Gtk.FileChooserNative(
-            title='Select a folder',
-            action=Gtk.FileChooserAction.SELECT_FOLDER,
-            modal=True,
-            select_multiple=False,
-            accept_label='Select',
-            cancel_label='Cancel',
-            transient_for=self)
-        file_chooser.connect('response', file_chooser_response)
-        file_chooser.show()
-
-    @Gtk.Template.Callback()
     def on_thumbnail_size_spbtn_value_changed(self, _: Gtk.SpinButton) -> None:
         """
         Handle changing the thumbnail size.
@@ -137,6 +97,35 @@ class SystemPreferences(Adw.PreferencesWindow):
             _ (Gtk.SpinButton): Unused
         """
         self.config.image_thumbnail_size = (self.thumbnail_width_spbtn.get_value(), self.thumbnail_height_spbtn.get_value())
+        self.config.save()
+
+    ### GAME DIRECTORIES
+
+    def on_game_directory_row_added(self, group: DynamicPreferencesGroup, row: DirectoryEntryRow) -> None:
+        self.update_game_directory_row(row)
+
+    def update_game_directory_row(self, row: DirectoryEntryRow) -> None:
+        def row_removed(button: Gtk.Button) -> None:
+            self.games_directory_group.remove_row(row)
+            self.save_game_directories()
+
+        def row_changed(row: DirectoryEntryRow) -> None:
+            self.__update_add_btn()
+
+        def directory_found(row: DirectoryEntryRow, path: str) -> None:
+            row.set_text(path)
+
+        row.set_title("Directory")
+        row.set_transient_parent(self)
+        remove_btn = Gtk.Button(valign=Gtk.Align.CENTER, icon_name='user-trash-symbolic')
+        remove_btn.add_css_class('destructive-action')
+        remove_btn.connect('clicked', row_removed)
+        row.add_suffix(remove_btn)
+        row.connect('changed', row_changed)
+        row.connect('directory_found', directory_found)
+
+    def save_game_directories(self) -> None:
+        self.config.game_directories = [ row.get_text() for row in self.games_directory_group.rows ]
         self.config.save()
 
     ### LAUNCH

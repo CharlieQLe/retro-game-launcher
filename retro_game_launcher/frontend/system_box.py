@@ -111,7 +111,9 @@ class SystemBox(Gtk.Box):
         self.pop_menu.popdown()
 
         # Create the preferences and show it
-        SystemPreferences(config=self.system_config, transient_parent=self.window).present()
+        pref = SystemPreferences(config=self.system_config)
+        pref.set_transient_for(self.window)
+        pref.present()
 
     @Gtk.Template.Callback()
     def on_delete_btn_clicked(self, button: Gtk.Button) -> None:
@@ -164,6 +166,6 @@ class SystemBox(Gtk.Box):
         # Add games to the model
         for game in self.system_config.games:
             self.game_view.add_game(Game(game_name=game.name,
-                                        game_file_name=game.rom_path,
-                                        thumbnail_file_name=game.thumbnail_path,
+                                        rom_path=game.rom_path,
+                                        thumbnail_path=game.thumbnail_path,
                                         config=self.system_config))

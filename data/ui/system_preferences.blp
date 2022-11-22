@@ -33,19 +33,12 @@ template SystemPreferences : Adw.PreferencesWindow {
             empty-row-title: _("No variables found");
         }
 
-        Adw.PreferencesGroup {
-            title: _("Games directory");
-            description: _("The parent directory for each game's folder");
-            Adw.EntryRow games_directory_entry {
-                title: _("Games Directory");
-                changed => on_games_directory_entry_changed();
-                Gtk.Button {
-                    valign: center;
-                    icon-name: "folder-open-symbolic";
-                    clicked => on_choose_games_directory_clicked();
-                    styles [ "flat" ]
-                }
-            }
+        .DynamicPreferencesGroup games_directory_group {
+            title: _("Game Directories");
+            description: _("The directories that store games.");
+            add-btn-icon-name: "list-add-symbolic";
+            add-btn-text: _("Add Directory");
+            empty-row-title: _("No directories found");
         }
 
         Adw.PreferencesGroup image_group {

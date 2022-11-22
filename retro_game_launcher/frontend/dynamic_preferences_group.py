@@ -4,7 +4,7 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, Gtk, GObject
 
-class DynamicPreferencesRowFactory:
+class DynamicPreferencesRowFactory(GObject.Object):
     """
     The abstract definition for a factory that generates a row.
     """
@@ -52,7 +52,7 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
         self.factory: DynamicPreferencesRowFactory = None
 
     @Gtk.Template.Callback()
-    def on_add_clicked(self, button: Gtk.Button) -> None:
+    def on_add_btn_clicked(self, button: Gtk.Button) -> None:
         """
         Handle the add button.
 

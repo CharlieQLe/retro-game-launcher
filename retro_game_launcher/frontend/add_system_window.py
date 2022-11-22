@@ -5,6 +5,8 @@ gi.require_version('Adw', '1')
 from gi.repository import Adw, Gtk, GObject
 from retro_game_launcher.backend import utility
 from retro_game_launcher.backend.config import SystemConfig
+from retro_game_launcher.frontend.widgets.directory_entry_row import DirectoryEntryRow, DirectoryEntryRowFactory
+from retro_game_launcher.frontend.dynamic_preferences_group import DynamicPreferencesGroup
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/add_system_window.ui')
 class AddSystemWindow(Adw.Window):
@@ -20,7 +22,7 @@ class AddSystemWindow(Adw.Window):
     toast_overlay: Adw.ToastOverlay = Gtk.Template.Child()
     add_system_btn: Gtk.Button = Gtk.Template.Child()
     system_name_entry: Adw.EntryRow = Gtk.Template.Child()
-    games_directory_entry: Adw.EntryRow = Gtk.Template.Child()
+    games_directory_group: DynamicPreferencesGroup = Gtk.Template.Child()
 
     def __init__(self, **kwargs) -> None:
         """
@@ -28,6 +30,7 @@ class AddSystemWindow(Adw.Window):
         """
         super().__init__(**kwargs)
         self.add_system_btn.set_sensitive(False)
+        self.games_directory_group.set_factory(DirectoryEntryRowFactory())
 
     @Gtk.Template.Callback()
     def on_cancel_clicked(self, button: Gtk.Button) -> None:
@@ -47,17 +50,13 @@ class AddSystemWindow(Adw.Window):
         Parameters:
             button (Gtk.Button): The button that was clicked
         """
-
-        # Get the entry data
-        system_name = self.system_name_entry.get_text()
-        games_directory = self.games_directory_entry.get_text()
-
         # Create and save the config
-        sc = SystemConfig(system_name, games_directory)
+        sc = SystemConfig(system_name=self.system_name_entry.get_text(),
+                          game_directories=list(dict.fromkeys(list(filter(lambda path : os.path.isdir(path), [ row.get_text() for row in self.games_directory_group.rows ])))))
         sc.save()
 
         # Emit signal and close the window
-        self.emit('add_system', system_name)
+        self.emit('add_system', sc.name)
         self.close()
 
     @Gtk.Template.Callback()
@@ -68,45 +67,33 @@ class AddSystemWindow(Adw.Window):
         Parameters:
             _ (Adw.EntryRow): Unused
         """
-        system_name = self.system_name_entry.get_text()
-        games_directory = self.games_directory_entry.get_text()
-
-        # Check if any of the parameters fail. If so, set sensitive to false
-        self.add_system_btn.set_sensitive(
-            not SystemConfig.system_exists(system_name) and
-            not system_name.startswith(' ') and
-            not system_name.endswith(' ') and
-            len(system_name) > 0 and
-            os.path.isdir(games_directory))
+        self.__update_add_btn()
 
     @Gtk.Template.Callback()
-    def on_games_directory_chooser_clicked(self, button: Gtk.Button) -> None:
-        """
-        Handle opening the file chooser for the games directory.
+    def on_games_directory_row_added(self, group: DynamicPreferencesGroup, row: DirectoryEntryRow) -> None:
+        def row_removed(button: Gtk.Button) -> None:
+            self.games_directory_group.remove_row(row)
 
-        Parameters:
-            button (Gtk.Button): The button that was clicked.
-        """
-        def file_chooser_response(file_chooser: Gtk.FileChooserNative, response: Gtk.ResponseType) -> None:
-            """
-            Handle the response from the file chooser.
+        def row_changed(row: DirectoryEntryRow) -> None:
+            self.__update_add_btn()
 
-            Parameters:
-                file_chooser (Gtk.FileChooserNative): The file chooser that emitted the response.
-                response (Gtk.ResponseType): The response type.
-            """
-            if response == Gtk.ResponseType.ACCEPT:
-                file = file_chooser.get_file()
-                path = file.get_path()
-                if path is not None:
-                    self.games_directory_entry.set_text(path)
+        def directory_found(row: DirectoryEntryRow, path: str) -> None:
+            row.set_text(path)
 
-        file_chooser = Gtk.FileChooserNative(title='Select a folder',
-                                             action=Gtk.FileChooserAction.SELECT_FOLDER,
-                                             modal=True,
-                                             select_multiple=False,
-                                             accept_label='Select',
-                                             cancel_label='Cancel',
-                                             transient_for=self)
-        file_chooser.connect('response', file_chooser_response)
-        file_chooser.show()
+        row.set_title("Directory")
+        row.set_transient_parent(self)
+        remove_btn = Gtk.Button(valign=Gtk.Align.CENTER, icon_name='user-trash-symbolic')
+        remove_btn.add_css_class('destructive-action')
+        remove_btn.connect('clicked', row_removed)
+        row.add_suffix(remove_btn)
+        row.connect('changed', row_changed)
+        row.connect('directory_found', directory_found)
+
+    def __update_add_btn(self) -> None:
+        system_name = self.system_name_entry.get_text()
+        self.add_system_btn.set_sensitive(not SystemConfig.system_exists(system_name) and
+                                          not system_name.startswith(' ') and
+                                          not system_name.endswith(' ') and
+                                          len(system_name) > 0 and
+                                          len(self.games_directory_group.rows) > 0 and
+                                          all(os.path.isdir(r.get_text()) for r in self.games_directory_group.rows))

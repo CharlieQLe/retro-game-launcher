@@ -4,7 +4,7 @@ using Adw 1;
 template AddSystemWindow : Adw.Window {
     title: "Add System";
     default-height: 300;
-    default-width: 400;
+    default-width: 500;
     resizable: false;
     modal: true;
     content: Adw.ToastOverlay toast_overlay {
@@ -48,20 +48,15 @@ template AddSystemWindow : Adw.Window {
                             title: "System name";
                             changed => on_system_entry_changed();
                         }
+                    }
 
-                        Adw.EntryRow games_directory_entry {
-                            title: "Games directory";
-                            changed => on_system_entry_changed();
-
-                            [suffix]
-                            Gtk.Button {
-                                valign: center;
-                                icon-name: "folder-open-symbolic";
-                                clicked => on_games_directory_chooser_clicked();
-
-                                styles [ "flat" ]
-                            }
-                        }
+                    .DynamicPreferencesGroup games_directory_group {
+                        title: _("Game Directories");
+                        description: _("The directories that store games.");
+                        add-btn-icon-name: "list-add-symbolic";
+                        add-btn-text: _("Add Directory");
+                        empty-row-title: _("No directories found");
+                        row-added => on_games_directory_row_added();
                     }
                 };
             }

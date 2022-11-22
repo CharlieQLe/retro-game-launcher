@@ -63,19 +63,19 @@ class SystemConfig:
 
     ###
 
-    def __init__(self, system_name: str, games_directory='') -> None:
+    def __init__(self, system_name: str, game_directories: list[str]=[]) -> None:
         """
         Initialize the system.
 
         Parameters:
             system_name (str): The name of the system.
-            games_directory (str): The games directory.
+            games_directories (list[str]): The games directories.
         """
         self.__name = system_name
         self.__config_path = os.path.join(utility.user_config_directory(), '%s.json' % system_name)
         self.__games = []
         self.__configuration = {
-            'games_directory': games_directory,
+            'game_directories': game_directories,
             'emulator_command': [
                 '${CMD_EMULATOR}'
             ],
@@ -124,24 +124,24 @@ class SystemConfig:
         return self.__name
 
     @property
-    def games_directory(self) -> str:
+    def game_directories(self) -> list[str]:
         """
-        Get the games directory.
+        Get the game directories.
 
         Returns:
-            str: The games directory.
+            list[str]: The game directories.
         """
-        return self.__configuration['games_directory']
+        return self.__configuration['game_directories']
 
-    @games_directory.setter
-    def games_directory(self, directory: str) -> None:
+    @game_directories.setter
+    def game_directories(self, directories: list[str]) -> None:
         """
         Set the games directory.
 
         Parameters:
-            directory (str): The directory to set.
+            directories (list[str]): The directories to set.
         """
-        self.__configuration['games_directory'] = directory
+        self.__configuration['game_directories'] = directories
 
     @property
     def extensions(self) -> list[str]:
@@ -268,8 +268,7 @@ class SystemConfig:
         Returns:
             bool: Whether or not the game exists.
         """
-        dir = self.games_directory
-        return game_name in os.listdir(dir) and os.path.isdir(os.path.join(dir, game_name))
+        return any(game_name in os.listdir(dir) and os.path.isdir() for dir in self.game_directories)
 
     def get_game_directory(self, game_name: str) -> str | None:
         """
@@ -281,17 +280,18 @@ class SystemConfig:
         Returns:
             str | None: The path to the game if it exists, otherwise None.
         """
-        return os.path.join(self.games_directory, game_name) if self.has_game(game_name) else None
+        for dir in self.game_directories:
+            if game_name in os.listdir(dir):
+                path = os.path.join(dir, game_name)
+                if os.path.isdir(path):
+                    return path
+        return None
 
-    def get_game_subfolders(self) -> list[str]:
-        """
-        Get the subfolder names of the games under this system.
-
-        Returns:
-            list[str]: The subfolder names.
-        """
-        dir = self.games_directory
-        return [ d for d in os.listdir(dir) if os.path.isdir(os.path.join(dir, d)) ] if os.path.isdir(dir) else []
+    def get_game_paths(self) -> list[str]:
+        subfolders = []
+        for dir in self.game_directories:
+            subfolders.extend(list(filter(lambda d : os.path.isdir(d), [ os.path.join(dir, d) for d in os.listdir(dir) ])))
+        return subfolders
 
     def load_games(self) -> list['GameConfig']:
         """
@@ -302,13 +302,13 @@ class SystemConfig:
         """
         self.__games = []
         self.game_errors = []
-        for gm in self.get_game_subfolders():
+        for game_path in self.get_game_paths():
             try:
-                g = GameConfig(gm, self)
-                if not g.hidden:
-                    self.__games.append(g)
+                game = GameConfig(game_path, self)
+                if not game.hidden:
+                    self.__games.append(game)
             except:
-                self.game_errors.append(gm)
+                self.game_errors.append(os.path.basename(game_path))
         return self.game_errors
 
     ### COMMANDS
@@ -369,19 +369,19 @@ class GameConfig:
         hidden (bool): Whether or not the game should be ignored.
     """
 
-    def __init__(self, game_name: str, system_config: SystemConfig) -> None:
+    def __init__(self, game_path: str, system_config: SystemConfig) -> None:
         """
         Initialize the config.
 
         Parameters:
-            game_name (str): The name of the game.
+            game_path (str): The path to the game.
             system_config (SystemConfig): The system configuration.
         """
-        self.__name = game_name
-        game_directory = system_config.get_game_directory(game_name)
-        if game_directory is None:
+        if not os.path.isdir(game_path):
             raise NoGameExists()
-        game_subfolder_contents = os.listdir(game_directory)
+
+        self.__name = os.path.basename(game_path)
+        game_subfolder_contents = os.listdir(game_path)
 
         # Handle hidden
         self.__hidden = 'hidden' in game_subfolder_contents
@@ -390,11 +390,11 @@ class GameConfig:
         game_files = list(filter(lambda file_name : any(file_name.endswith('.%s' % ext) for ext in system_config.extensions), game_subfolder_contents))
         if not self.__hidden and len(game_files) == 0:
             raise NoGameExists()
-        self.__rom_path = os.path.join(game_directory, game_files[0]) if len(game_files) > 0 else None
+        self.__rom_path = os.path.join(game_path, game_files[0]) if len(game_files) > 0 else None
 
         # Handle thumbnail
         thumbnail_files = list(filter(lambda file_name : any(file_name.endswith('.%s' % ext) for ext in constants.cover_extensions), game_subfolder_contents))
-        self.__thumbnail_path = thumbnail_files[0] if len(thumbnail_files) > 0 else None
+        self.__thumbnail_path = os.path.join(game_path, thumbnail_files[0]) if len(thumbnail_files) > 0 else None
 
     @property
     def name(self) -> str:

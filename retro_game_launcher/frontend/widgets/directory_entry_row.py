@@ -11,9 +11,11 @@ class DirectoryEntryRow(Adw.EntryRow):
         'directory_found': (GObject.SIGNAL_RUN_FIRST, None, (str,))
     }
 
-    def __init__(self, transient_parent, **kwargs) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
+        self.__transient_parent = None
 
+    def set_transient_parent(self, transient_parent):
         self.__transient_parent = transient_parent
 
     @Gtk.Template.Callback()

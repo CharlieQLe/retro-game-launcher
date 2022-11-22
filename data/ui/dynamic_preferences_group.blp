@@ -5,7 +5,7 @@ template DynamicPreferencesGroup : Adw.PreferencesGroup {
     header-suffix: Gtk.Button {
         valign: center;
         visible: bind DynamicPreferencesGroup.can_user_add;
-        clicked => on_add_clicked();
+        clicked => on_add_btn_clicked();
         styles [ "suggested-action" ]
         child: Adw.ButtonContent {
             icon-name: bind DynamicPreferencesGroup.add_btn_icon_name;
