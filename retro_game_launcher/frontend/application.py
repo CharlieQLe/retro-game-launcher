@@ -21,38 +21,28 @@ class RetroGameLauncherApp(Adw.Application):
         """
         super().__init__(application_id=constants.app_id)
 
+        self.connect('handle-local-options', self.on_handle_local_options)
+        self.connect('activate', self.on_activate)
+
         self.add_main_option(
             long_name='system',
             short_name=ord('s'),
             flags=GLib.OptionFlags.NONE,
             arg=GLib.OptionArg.STRING,
             description=_('Launch a system'),
-            arg_description=None)
+            arg_description='Load the corresponding system page if one exists.')
 
-    def do_command_line(self, command):
-        """
-        Handle command line arguments.
+    def on_handle_local_options(self, application, options) -> int:
+        if options.contains("system"):
+            self.arg_system = options.lookup_value("system").get_string()
+            print('found system')
+        return -1
 
-        Parameters:
-            command (Gio.ApplicationCommandLine): The command options available.
-
-        Returns:
-            int
-        """
-        commands = command.get_options_dict()
-
-        # Get the system name
-        if commands.contains("system"):
-            self.arg_system = commands.lookup_value("system").get_string()
-
-        self.do_activate()
-        return 0
-
-    def do_activate(self):
+    def on_activate(self, application):
         """
         Activate the application.
         """
         win = MainWindow(
             arg_system=self.arg_system,
-            application=self)
+            application=application)
         win.present()
