@@ -6,6 +6,7 @@ from gi.repository import Adw, GdkPixbuf, Gio, Gtk, GObject
 from retro_game_launcher.backend import utility
 from retro_game_launcher.backend.config import SystemConfig
 from retro_game_launcher.frontend.game import Game
+from retro_game_launcher.frontend.widgets.game_item import GameItem
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/game_view.ui')
 class GameView(Gtk.Box):
@@ -63,47 +64,8 @@ class GameView(Gtk.Box):
             factory (Gtk.SignalListItemFactory): The factory that emitted this signal.
             item (Gtk.ListItem): The item that was bound.
         """
-        thumbnail_size = self.__system_config.image_thumbnail_size
-
-        data = item.get_item()
-
-        def run_game(button: Gtk.Button) -> None:
-            """
-            Handle running the game.
-
-            Parameters:
-                button (Gtk.Button): The button that was clicked
-            """
-            data.run()
-
-        # Create and retrieve the widgets
-        builder = Gtk.Builder.new_from_resource('/com/charlieqle/RetroGameLauncher/ui/game_item.ui')
-        game_item = builder.get_object('game_item')
-        thumbnail_box = builder.get_object('thumbnail_box')
-        thumbnail_img = builder.get_object('thumbnail_img')
-        no_cover_box = builder.get_object('no_cover_box')
-        label_no_cover = builder.get_object('label_no_cover')
-        game_name_label = builder.get_object('game_name_label')
-        play_game_btn = builder.get_object('play_game_btn')
-
-        # Handle the thumbnail_box
-        thumbnail_box.set_size_request(thumbnail_size[0], thumbnail_size[1])
-        thumbnail_path = data.get_thumbnail_path()
-        if thumbnail_path is None:
-            thumbnail_img.hide()
-        else:
-            no_cover_box.hide()
-            thumbnail_img.set_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size(thumbnail_path, thumbnail_size[0], thumbnail_size[1]))
-
-        # Set the text
-        game_name_label.set_text(data.game_name)
-
-        # Connect the signal
-        play_game_btn.connect('clicked', run_game)
-
-        # Set the item
         item.set_activatable(False)
-        item.set_child(game_item)
+        item.set_child(GameItem(item.get_item(), self.__system_config))
 
     def clear_games(self) -> None:
         """

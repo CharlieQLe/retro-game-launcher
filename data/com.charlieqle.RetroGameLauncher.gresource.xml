@@ -7,9 +7,9 @@
     <file preprocess="xml-stripblanks">ui/system_row.ui</file>
     <file preprocess="xml-stripblanks">ui/system_box.ui</file>
     <file preprocess="xml-stripblanks">ui/system_preferences.ui</file>
-    <file preprocess="xml-stripblanks">ui/game_item.ui</file>
     <file preprocess="xml-stripblanks">ui/game_view.ui</file>
     <file preprocess="xml-stripblanks">ui/dynamic_preferences_group.ui</file>
+    <file preprocess="xml-stripblanks">ui/widgets/game_item.ui</file>
     <file preprocess="xml-stripblanks">ui/widgets/extension_row.ui</file>
     <file preprocess="xml-stripblanks">ui/widgets/key_value_row.ui</file>
     <file preprocess="xml-stripblanks">ui/widgets/directory_entry_row.ui</file>
