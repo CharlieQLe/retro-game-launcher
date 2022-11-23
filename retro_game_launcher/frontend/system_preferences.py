@@ -45,23 +45,15 @@ class SystemPreferences(Adw.PreferencesWindow):
         self.extension_group.set_factory(ExtensionRowFactory())
 
         for game_directory in self.config.game_directories:
-            row = DirectoryEntryRow()
-            row.set_text(game_directory)
-            self.update_game_directory_row(row)
-            self.games_directory_group.add_row(row)
+            self.games_directory_group.generate_row().set_text(game_directory)
 
         for launch_key, launch_value in self.config.launch_var.items():
-            row = KeyValueRow()
+            row = self.launch_var_group.generate_row()
             row.key = launch_key
             row.value = ' '.join(launch_value) if launch_key.startswith('CMD_') else launch_value
-            self.update_launch_var_row(row)
-            self.launch_var_group.add_row(row)
 
         for extension in self.config.extensions:
-            row = ExtensionRow()
-            row.set_text(extension)
-            self.update_extension_row(row)
-            self.extension_group.add_row(row)
+            self.extension_group.generate_row().set_text(extension)
 
     @Gtk.Template.Callback()
     def on_launch_command_entry_changed(self, row: Adw.EntryRow) -> None:
@@ -100,23 +92,19 @@ class SystemPreferences(Adw.PreferencesWindow):
 
     @Gtk.Template.Callback()
     def on_games_directory_row_added(self, group: DynamicPreferencesGroup, row: DirectoryEntryRow) -> None:
-        self.update_game_directory_row(row)
-
-    @Gtk.Template.Callback()
-    def on_games_directory_row_removed(self, group: DynamicPreferencesGroup, row: DirectoryEntryRow) -> None:
-        self.save_game_directories()
-
-    def update_game_directory_row(self, row: DirectoryEntryRow) -> None:
         def row_changed(row: DirectoryEntryRow) -> None:
             self.save_game_directories()
 
         def directory_found(row: DirectoryEntryRow, path: str) -> None:
             row.set_text(path)
 
-        row.set_title("Directory")
         row.set_transient_parent(self)
         row.connect('changed', row_changed)
         row.connect('directory_found', directory_found)
+
+    @Gtk.Template.Callback()
+    def on_games_directory_row_removed(self, group: DynamicPreferencesGroup, row: DirectoryEntryRow) -> None:
+        self.save_game_directories()
 
     def save_game_directories(self) -> None:
         self.config.game_directories = [ row.get_text() for row in self.games_directory_group.rows ]
@@ -133,20 +121,6 @@ class SystemPreferences(Adw.PreferencesWindow):
             group (DynamicPreferencesGroup): The parent of the row.
             row (KeyValueRow): The added row.
         """
-        self.update_launch_var_row(row)
-
-    @Gtk.Template.Callback()
-    def on_launch_var_row_removed(self, group: DynamicPreferencesGroup, row: KeyValueRow) -> None:
-        self.save_launch_variables()
-
-    def update_launch_var_row(self, row: KeyValueRow) -> None:
-        """
-        Handle updating the launch var row.
-
-        Parameters:
-            row (KeyValueRow): The row to remove.
-        """
-
         def row_changed(row: KeyValueRow, key: str, value: str) -> None:
             """
             Handle the row changing.
@@ -159,6 +133,10 @@ class SystemPreferences(Adw.PreferencesWindow):
             self.save_launch_variables()
 
         row.connect('key_value_changed', row_changed)
+
+    @Gtk.Template.Callback()
+    def on_launch_var_row_removed(self, group: DynamicPreferencesGroup, row: KeyValueRow) -> None:
+        self.save_launch_variables()
 
     def save_launch_variables(self) -> None:
         """
@@ -186,23 +164,6 @@ class SystemPreferences(Adw.PreferencesWindow):
             group (DynamicPreferencesGroup): The group that emitted this signal.
             row (ExtensionRow): The row that was added.
         """
-        extensions = self.config.extensions
-        extensions.append('')
-        self.config.extensions = extensions
-        self.config.save()
-        self.update_extension_row(row)
-
-    @Gtk.Template.Callback()
-    def on_extension_row_removed(self, group: DynamicPreferencesGroup, row: ExtensionRow) -> None:
-        self.save_extensions()
-
-    def update_extension_row(self, row: ExtensionRow) -> None:
-        """
-        Update the extension row.
-
-        Parameters:
-            row (ExtensionRow): The row to update.
-        """
 
         def row_changed(row: ExtensionRow) -> None:
             """
@@ -214,6 +175,10 @@ class SystemPreferences(Adw.PreferencesWindow):
             self.save_extensions()
 
         row.connect('changed', row_changed)
+
+    @Gtk.Template.Callback()
+    def on_extension_row_removed(self, group: DynamicPreferencesGroup, row: ExtensionRow) -> None:
+        self.save_extensions()
 
     def save_extensions(self) -> None:
         """

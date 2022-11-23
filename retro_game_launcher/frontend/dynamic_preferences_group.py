@@ -50,7 +50,7 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
         super().__init__(**kwargs)
 
         self.rows: list[Adw.PreferencesRow] = []
-        self.factory: DynamicPreferencesRowFactory = None
+        self.__factory: DynamicPreferencesRowFactory = None
 
     @Gtk.Template.Callback()
     def on_add_btn_clicked(self, button: Gtk.Button) -> None:
@@ -60,11 +60,10 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
         Parameters:
             button (Gtk.Button): The button that was clicked
         """
-        if self.factory is None:
+        if self.__factory is None:
             return
-        row = self.factory.create_row()
+        row = self.__factory.create_row()
         self.add_row(row)
-        self.emit('row-added', row)
 
     def set_factory(self, factory: DynamicPreferencesRowFactory) -> None:
         """
@@ -73,7 +72,7 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
         Parameters:
             factory (DynamicPreferencesRowFactory): The factory to set
         """
-        self.factory = factory
+        self.__factory = factory
 
     def clear_rows(self) -> None:
         """
@@ -104,6 +103,19 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
             self.emit('row-removed', row)
             return True
         return False
+
+    def generate_row(self) -> Adw.PreferencesRow | None:
+        """
+        Generate a row.
+
+        Returns:
+            Adw.PreferencesRow | None: A row if there is a factory, None otherwise.
+        """
+        if self.__factory is None:
+            return None
+        row = self.__factory.create_row()
+        self.add_row(row)
+        return row
 
     def add_row(self, row: Adw.PreferencesRow) -> bool:
         """
@@ -137,4 +149,5 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
         self.add(row)
         self.rows.append(row)
         self.empty_row.hide()
+        self.emit('row-added', row)
         return True
