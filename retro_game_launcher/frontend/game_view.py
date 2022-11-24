@@ -47,6 +47,19 @@ class GameView(Gtk.Box):
         self.games = Gio.ListStore.new(Game)
         self.__system_config: SystemConfig = None
 
+    def reload(self, toast_overlay=None):
+        self.games.remove_all()
+        game_errors = self.__system_config.load_games()
+        if toast_overlay is not None:
+            for gm in game_errors:
+                toast_overlay.add_toast(Adw.Toast(title=_('%s could not be loaded!' % gm)))
+        for game in self.__system_config.games:
+            self.games.append(Game(game_name=game.name,
+                                    rom_path=game.rom_path,
+                                    thumbnail_path=game.thumbnail_path,
+                                    config=self.__system_config))
+        self.has_games = len(self.__system_config.games) > 0
+
     def set_system_config(self, system_config: SystemConfig) -> None:
         """
         Set the system config.
@@ -66,33 +79,6 @@ class GameView(Gtk.Box):
         """
         item.set_activatable(False)
         item.set_child(GameItem(item.get_item(), self.__system_config))
-
-    def clear_games(self) -> None:
-        """
-        Clear all games from this view.
-        """
-        self.games.remove_all()
-        self.has_games = False
-
-    def add_game(self, game: Game) -> None:
-        """
-        Add a game to this view.
-
-        Parameters:
-            game (Game): The game to add.
-        """
-        self.games.append(game)
-        self.has_games = True
-
-    def insert_game(self, position: int, game: Game) -> None:
-        """
-        Insert a game at the specified position within this view.
-
-        Parameters:
-            position (int): The position to insert at
-            game (Game): The game to add
-        """
-        self.games.insert(position, game)
 
     def __len__(self) -> int:
         """

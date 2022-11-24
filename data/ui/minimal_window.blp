@@ -1,0 +1,30 @@
+using Gtk 4.0;
+using Adw 1;
+
+template MinimalWindow : Adw.ApplicationWindow {
+    title: "";
+    default-width: 800;
+    default-height: 600;
+
+    content: Adw.ToastOverlay toast_overlay {
+        child: Gtk.Box {
+            orientation: vertical;
+            hexpand: true;
+            vexpand: true;
+
+            Adw.HeaderBar {
+                styles ["flat"]
+                [start]
+                Gtk.Button {
+                    icon-name: "applications-games-symbolic";
+                    clicked => on_open_emu_btn_clicked();
+                }
+            }
+
+            .GameView game_view {
+                none_title: "No games found";
+                none_description: "Start adding games!";
+            }
+        };
+    };
+}

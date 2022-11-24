@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/com/charlieqle/RetroGameLauncher">
-    <file preprocess="xml-stripblanks">ui/main_window.ui</file>
-    <file preprocess="xml-stripblanks">ui/preferences.ui</file>
     <file preprocess="xml-stripblanks">ui/add_system_window.ui</file>
-    <file preprocess="xml-stripblanks">ui/system_row.ui</file>
+    <file preprocess="xml-stripblanks">ui/dynamic_preferences_group.ui</file>
+    <file preprocess="xml-stripblanks">ui/game_view.ui</file>
+    <file preprocess="xml-stripblanks">ui/main_window.ui</file>
+    <file preprocess="xml-stripblanks">ui/minimal_window.ui</file>
+    <file preprocess="xml-stripblanks">ui/preferences.ui</file>
     <file preprocess="xml-stripblanks">ui/system_box.ui</file>
     <file preprocess="xml-stripblanks">ui/system_preferences.ui</file>
-    <file preprocess="xml-stripblanks">ui/game_view.ui</file>
-    <file preprocess="xml-stripblanks">ui/dynamic_preferences_group.ui</file>
+    <file preprocess="xml-stripblanks">ui/system_row.ui</file>
     <file preprocess="xml-stripblanks">ui/widgets/game_item.ui</file>
     <file preprocess="xml-stripblanks">ui/widgets/extension_row.ui</file>
     <file preprocess="xml-stripblanks">ui/widgets/key_value_row.ui</file>

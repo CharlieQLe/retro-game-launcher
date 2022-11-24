@@ -3,7 +3,9 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, Gio, GLib
 from retro_game_launcher.backend import constants
+from retro_game_launcher.backend.config import SystemConfig
 from retro_game_launcher.frontend.main_window import MainWindow
+from retro_game_launcher.frontend.minimal_window import MinimalWindow
 
 class RetroGameLauncherApp(Adw.Application):
     """
@@ -41,7 +43,8 @@ class RetroGameLauncherApp(Adw.Application):
         """
         Activate the application.
         """
-        win = MainWindow(
-            arg_system=self.arg_system,
-            application=application)
-        win.present()
+        if self.arg_system is not None and SystemConfig.system_exists(self.arg_system):
+            MinimalWindow(self.arg_system, application=application).present()
+        else:
+            MainWindow(application=application).present()
+            

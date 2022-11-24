@@ -147,15 +147,4 @@ class SystemBox(Gtk.Box):
         Reload the game view.
         """
         # Remove all games from the model
-        self.game_view.clear_games()
-
-        # Load games into the config and add toasts if necessary
-        for gm in self.system_config.load_games():
-            self.window.toast_overlay.add_toast(Adw.Toast(title=_('%s could not be loaded!' % gm)))
-
-        # Add games to the model
-        for game in self.system_config.games:
-            self.game_view.add_game(Game(game_name=game.name,
-                                        rom_path=game.rom_path,
-                                        thumbnail_path=game.thumbnail_path,
-                                        config=self.system_config))
+        self.game_view.reload(toast_overlay=self.window.toast_overlay)

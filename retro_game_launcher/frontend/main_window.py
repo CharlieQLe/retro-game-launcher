@@ -57,12 +57,9 @@ class MainWindow(Adw.ApplicationWindow):
     home = Gtk.Template.Child()
     pop_menu = Gtk.Template.Child()
 
-    def __init__(self, arg_system: str | None, **kwargs) -> None:
+    def __init__(self, **kwargs) -> None:
         """
         Initialize the window.
-
-        Parameters:
-            arg_system (str | None): The name of the system to load.
         """
         super().__init__(**kwargs)
 
@@ -72,10 +69,6 @@ class MainWindow(Adw.ApplicationWindow):
         self.has_systems = len(system_names) > 0
         for system_name in system_names:
             self.add_system(system_name)
-
-        # Open the specified system
-        if arg_system is not None and arg_system in system_names:
-            self.__open_system_page(arg_system, only_system=True)
 
     @Gtk.Template.Callback()
     def on_add_system_clicked(self, button: Gtk.Button) -> None:
