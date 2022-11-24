@@ -6,7 +6,7 @@ template DynamicPreferencesGroup : Adw.PreferencesGroup {
         valign: center;
         visible: bind DynamicPreferencesGroup.can_user_add;
         clicked => on_add_btn_clicked();
-        styles [ "suggested-action" ]
+        styles [ "flat" ]
         child: Adw.ButtonContent {
             icon-name: bind DynamicPreferencesGroup.add_btn_icon_name;
             label: bind DynamicPreferencesGroup.add_btn_text;
@@ -14,7 +14,8 @@ template DynamicPreferencesGroup : Adw.PreferencesGroup {
         };
     };
 
-    Adw.ActionRow empty_row {
+    Adw.ActionRow {
+        visible: bind DynamicPreferencesGroup.is_empty;
         title: bind DynamicPreferencesGroup.empty_row_title;
     }
 }

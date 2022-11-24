@@ -36,12 +36,11 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
         'row-removed': (GObject.SIGNAL_RUN_FIRST, None, (Adw.PreferencesRow,))
     }
 
-    empty_row = Gtk.Template.Child()
-
     can_user_add: bool = GObject.Property(type=bool, default=True)
     add_btn_icon_name: str = GObject.Property(type=str, default='')
     add_btn_text: str = GObject.Property(type=str, default='')
     empty_row_title: str = GObject.Property(type=str, default='')
+    is_empty: bool = GObject.Property(type=bool, default=True)
 
     def __init__(self, **kwargs) -> None:
         """
@@ -82,6 +81,7 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
             self.remove(row)
         self.rows = []
         self.empty_row.show()
+        self.is_empty = True
 
     def remove_row(self, row: Adw.PreferencesRow) -> bool:
         """
@@ -96,10 +96,7 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
         if row in self.rows:
             self.remove(row)
             self.rows.remove(row)
-            if len(self.rows) > 0:
-                self.empty_row.hide()
-            else:
-                self.empty_row.show()
+            self.is_empty = len(self.rows) == 0
             self.emit('row-removed', row)
             return True
         return False
@@ -148,6 +145,6 @@ class DynamicPreferencesGroup(Adw.PreferencesGroup):
 
         self.add(row)
         self.rows.append(row)
-        self.empty_row.hide()
+        self.is_empty = False
         self.emit('row-added', row)
         return True
