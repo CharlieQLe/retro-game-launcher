@@ -19,7 +19,7 @@ Gtk.Popover pop_menu {
             styles [ "body" ]
         }
 
-        Gtk.Button delete_btn {
+        Gtk.Button {
             label: _("Delete System");
             has-frame: false;
             clicked => on_delete_btn_clicked();
@@ -41,19 +41,19 @@ template SystemBox : Box {
         };
 
         [start]
-        Button go_back_btn {
+        Button {
             icon-name: "go-previous-symbolic";
             clicked => on_go_back_btn_clicked();
         }
 
         [start]
-        Button refresh_btn {
+        Button {
             icon-name: "view-refresh-symbolic";
             clicked => on_refresh_btn_clicked();
         }
 
         [start]
-        Button open_emu_btn {
+        Button {
             icon-name: "applications-games-symbolic";
             clicked => on_open_emu_btn_clicked();
         }

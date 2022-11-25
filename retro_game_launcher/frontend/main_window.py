@@ -162,7 +162,7 @@ class MainWindow(Adw.ApplicationWindow):
         """
         self.__open_system_page(system_row.system_name)
 
-    def __open_system_page(self, system_name: str, only_system: bool = False) -> None:
+    def __open_system_page(self, system_name: str) -> None:
         """
         Handle opening a system page.
 
@@ -171,7 +171,7 @@ class MainWindow(Adw.ApplicationWindow):
             only_system (bool): If true, ensure that this page is the only one open.
         """
         if self.system_map[system_name]['box'] is None:
-            box = SystemBox(system_name=system_name, window=self, only_system=only_system)
+            box = SystemBox(system_name=system_name, window=self)
             box.connect('closed', self._close_system_page)
             box.connect('deleted', self._on_system_deleted)
             self.leaflet.append(box)

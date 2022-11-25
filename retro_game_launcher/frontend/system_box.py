@@ -28,31 +28,22 @@ class SystemBox(Gtk.Box):
 
     system_name: str = GObject.Property(type=str, default='')
 
-    delete_btn: Gtk.Button = Gtk.Template.Child()
-    go_back_btn: Gtk.Button = Gtk.Template.Child()
-    refresh_btn: Gtk.Button = Gtk.Template.Child()
     game_view: GameView = Gtk.Template.Child()
     pop_menu: Gtk.Popover = Gtk.Template.Child()
 
-    def __init__(self, system_name: str, window: Adw.ApplicationWindow, only_system: bool = False, **kwargs) -> None:
+    def __init__(self, system_name: str, window: Adw.ApplicationWindow, **kwargs) -> None:
         """
         Initialize the system view.
 
         Parameters:
             system_name (str): The name of the system
             window (Adw.ApplicationWindow): The main window
-            only_system (bool): Decide if this system should be the only system
         """
         super().__init__(**kwargs)
 
         # Set the properties
         self.system_name = system_name
         self.window = window
-
-        # If this is the only system, hide the delete button and the back button
-        if only_system:
-            self.delete_btn.hide()
-            self.go_back_btn.hide()
 
         self.system_config = SystemConfig.load(system_name)
         self.game_view.set_system_config(self.system_config)
