@@ -29,6 +29,10 @@ install_data(('@0@.gschema.xml').format(application_id),
   install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )
 
+install_subdir('presets',
+  install_dir: pkgdatadir
+)
+
 compile_schemas = find_program('glib-compile-schemas', required: false)
 if compile_schemas.found()
   test('Validate schema file',

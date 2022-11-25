@@ -1,0 +1,26 @@
+{
+    "game_directories": [],
+    "emulator_command": [
+        "${CMD_EMULATOR}"
+    ],
+    "launch_command": [
+        "${CMD_EMULATOR}",
+        "${GAME}"
+    ],
+    "launch_var": {
+        "CMD_EMULATOR": [
+            "/usr/bin/flatpak",
+            "run",
+            "dev.bsnes.bsnes"
+        ]
+    },
+    "images": {
+        "thumbnail": {
+            "width": 334.0,
+            "height": 250.0
+        }
+    },
+    "extensions": [
+        "sfc"
+    ]
+}

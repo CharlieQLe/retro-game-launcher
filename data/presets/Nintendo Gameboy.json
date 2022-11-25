@@ -1,0 +1,28 @@
+{
+    "game_directories": [],
+    "emulator_command": [
+        "${CMD_EMULATOR}"
+    ],
+    "launch_command": [
+        "${CMD_EMULATOR}",
+        "${GAME}"
+    ],
+    "launch_var": {
+        "CMD_EMULATOR": [
+            "/usr/bin/flatpak",
+            "run",
+            "io.mgba.mGBA"
+        ]
+    },
+    "images": {
+        "thumbnail": {
+            "width": 256.0,
+            "height": 256.0
+        }
+    },
+    "extensions": [
+        "gb",
+        "gbc",
+        "gba"
+    ]
+}

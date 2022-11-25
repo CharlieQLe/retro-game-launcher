@@ -1,0 +1,26 @@
+{
+    "game_directories": [],
+    "emulator_command": [
+        "${CMD_EMULATOR}"
+    ],
+    "launch_command": [
+        "${CMD_EMULATOR}",
+        "${GAME}"
+    ],
+    "launch_var": {
+        "CMD_EMULATOR": [
+            "/usr/bin/flatpak",
+            "run",
+            "net.kuribo64.melonDS"
+        ]
+    },
+    "images": {
+        "thumbnail": {
+            "width": 285.0,
+            "height": 256.0
+        }
+    },
+    "extensions": [
+        "nds"
+    ]
+}

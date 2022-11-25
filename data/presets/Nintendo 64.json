@@ -1,0 +1,27 @@
+{
+    "game_directories": [],
+    "emulator_command": [
+        "${CMD_EMULATOR}"
+    ],
+    "launch_command": [
+        "${CMD_EMULATOR}",
+        "--nogui",
+        "${GAME}"
+    ],
+    "launch_var": {
+        "CMD_EMULATOR": [
+            "/usr/bin/flatpak",
+            "run",
+            "io.github.simple64.simple64"
+        ]
+    },
+    "images": {
+        "thumbnail": {
+            "width": 367.0,
+            "height": 256.0
+        }
+    },
+    "extensions": [
+        "z64"
+    ]
+}

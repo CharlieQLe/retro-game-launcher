@@ -326,7 +326,7 @@ class SystemConfig:
         env_map = utility.environment_map(**kwargs)
         for key, value in self.launch_var.items():
             env_map[key] = value
-        return utility.environment_replace_command(command, env_map)
+        return utility.environment_replace_command(command, **env_map)
 
     def get_substituted_launch_command(self, **kwargs) -> list[str]:
         """
