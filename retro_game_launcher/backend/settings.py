@@ -2,6 +2,7 @@ import gi
 from gi.repository import Gio
 from retro_game_launcher.backend import constants
 
+THEME = 'theme'
 TGDB_API_KEY = 'tgdb-api-key'
 
 class Settings:
@@ -26,6 +27,31 @@ class Settings:
         Initialize the settings.
         """
         self.__settings = Settings.gsettings()
+
+    ### THEME
+
+    @property
+    def theme(self) -> str:
+        """
+        Get the theme.
+
+        Returns:
+            str: The theme.
+        """
+        return self.__settings.get_string(THEME)
+
+    @theme.setter
+    def theme(self, theme: str) -> None:
+        """
+        Set the theme.
+
+        Parameters:
+            theme (str): The theme.
+        """
+        self.__settings.set_string(THEME, theme)
+
+    def connect_theme_changed(self, function) -> None:
+        self.__settings.connect('changed::%s' % THEME, function)
 
     ### THEGAMESDB
 

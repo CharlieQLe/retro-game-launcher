@@ -6,6 +6,25 @@ template Preferences : Adw.PreferencesWindow {
 
     Adw.PreferencesPage {
         Adw.PreferencesGroup {
+            Adw.ActionRow theme_selector {
+                title: "Theme";
+                subtitle: "Change the theme of the application";
+
+                [suffix]
+                Gtk.DropDown theme_dropdown {
+                    valign: center;
+                    model: Gtk.StringList {
+                        strings [
+                            "Follow system",
+                            "Light",
+                            "Dark"
+                        ]
+                    };
+                }
+            }
+        }
+
+        Adw.PreferencesGroup {
             title: "TheGamesDB Settings";
             description: "Settings for scraping from TheGamesDB";
 
