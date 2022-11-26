@@ -18,7 +18,19 @@ class SystemConfig:
         """
         if not SystemConfig.system_exists(system_name):
             return None
-        sc = SystemConfig(system_name)
+        sc = SystemConfig()
+        sc.name = system_name
+        sc.config_path = SystemConfig.generate_config_path(system_name)
+        sc.reload()
+        return sc
+
+    @staticmethod
+    def load_from_path(system_name, path: str):
+        if not os.path.exists(path):
+            return None
+        sc = SystemConfig()
+        sc.name = system_name
+        sc.config_path = path
         sc.reload()
         return sc
 
@@ -35,7 +47,7 @@ class SystemConfig:
         """
         if not SystemConfig.system_exists(system_name):
             return False
-        os.remove(os.path.join(utility.user_config_directory(), '%s.json' % system_name))
+        os.remove(SystemConfig.generate_config_path(system_name))
         return True
 
     @staticmethod
@@ -61,9 +73,13 @@ class SystemConfig:
         """
         return system_name in SystemConfig.get_system_names()
 
+    @staticmethod
+    def generate_config_path(system_name: str) -> str:
+        return os.path.join(utility.user_config_directory(), '%s.json' % system_name)
+
     ###
 
-    def __init__(self, system_name: str, game_directories: list[str]=[]) -> None:
+    def __init__(self) -> None:
         """
         Initialize the system.
 
@@ -71,11 +87,11 @@ class SystemConfig:
             system_name (str): The name of the system.
             games_directories (list[str]): The games directories.
         """
-        self.__name = system_name
-        self.__config_path = os.path.join(utility.user_config_directory(), '%s.json' % system_name)
+        self.__name = ''
+        self.__config_path = ''
         self.__games = []
         self.__configuration = {
-            'game_directories': game_directories,
+            'game_directories': [],
             'emulator_command': [
                 '${CMD_EMULATOR}'
             ],
@@ -122,6 +138,36 @@ class SystemConfig:
             str: The system name.
         """
         return self.__name
+
+    @name.setter
+    def name(self, name: str) -> str:
+        """
+        Set the name of the system.
+
+        Properties:
+            name (str): The system name.
+        """
+        self.__name = name
+
+    @property
+    def config_path(self) -> str:
+        """
+        Get the path to the system config.
+
+        Returns:
+            str: The path.
+        """
+        return self.__config_path
+
+    @config_path.setter
+    def config_path(self, path: str) -> str:
+        """
+        Set the path to the system config.
+
+        Properties:
+            path (str): The system name.
+        """
+        self.__config_path = path
 
     @property
     def game_directories(self) -> list[str]:

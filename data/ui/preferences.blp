@@ -11,7 +11,7 @@ template Preferences : Adw.PreferencesWindow {
                 subtitle: "Change the theme of the application";
 
                 [suffix]
-                Gtk.DropDown theme_dropdown {
+                Gtk.DropDown {
                     valign: center;
                     model: Gtk.StringList {
                         strings [
@@ -20,6 +20,7 @@ template Preferences : Adw.PreferencesWindow {
                             "Dark"
                         ]
                     };
+                    notify::selected => on_theme_dropdown_notify_selected();
                 }
             }
         }
