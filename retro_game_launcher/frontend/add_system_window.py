@@ -83,7 +83,7 @@ class AddSystemWindow(Adw.Window):
         self.close()
 
     @Gtk.Template.Callback()
-    def on_preset_dropdown_notify_selected(self, dropdown, selected):
+    def on_preset_notify_selected(self, dropdown, selected):
         self.__selected_preset = dropdown.get_selected()
         if self.__selected_preset == 0:
             self.system_name_entry.set_text('')

@@ -42,21 +42,15 @@ template AddSystemWindow : Adw.Window {
                     spacing: 24;
 
                     Adw.PreferencesGroup {
-                        Adw.ActionRow {
+                        Adw.ComboRow {
                             title: "Presets";
                             subtitle: "Automatically sets up the configuration";
-
-                            [suffix]
-                            Gtk.DropDown {
-                                valign: center;
-                                enable-search: true;
-                                model: Gtk.StringList preset_model {
-                                    strings [
-                                        "Custom"
-                                    ]
-                                };
-                                notify::selected => on_preset_dropdown_notify_selected();
-                            }
+                            model: Gtk.StringList preset_model {
+                                strings [
+                                    "Custom"
+                                ]
+                            };
+                            notify::selected => on_preset_notify_selected();
                         }
                     }
 
