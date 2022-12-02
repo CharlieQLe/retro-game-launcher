@@ -12,7 +12,6 @@
     <file preprocess="xml-stripblanks">ui/system_row.ui</file>
     <file preprocess="xml-stripblanks">ui/widgets/game_item.ui</file>
     <file preprocess="xml-stripblanks">ui/widgets/extension_row.ui</file>
-    <file preprocess="xml-stripblanks">ui/widgets/key_value_row.ui</file>
     <file preprocess="xml-stripblanks">ui/widgets/directory_entry_row.ui</file>
   </gresource>
 </gresources>

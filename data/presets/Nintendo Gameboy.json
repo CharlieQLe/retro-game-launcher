@@ -1,19 +1,7 @@
 {
     "game_directories": [],
-    "emulator_command": [
-        "${CMD_EMULATOR}"
-    ],
-    "launch_command": [
-        "${CMD_EMULATOR}",
-        "${GAME}"
-    ],
-    "launch_var": {
-        "CMD_EMULATOR": [
-            "/usr/bin/flatpak",
-            "run",
-            "io.mgba.mGBA"
-        ]
-    },
+    "emulator_command": "/usr/bin/flatpak run io.mgba.mGBA",
+    "launch_command": "${EMULATOR} ${GAME}",
     "images": {
         "thumbnail": {
             "width": 256.0,

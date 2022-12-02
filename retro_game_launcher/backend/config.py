@@ -1,6 +1,8 @@
 import json
 import os
 import sys
+import shlex
+import subprocess
 from retro_game_launcher.backend import utility
 from retro_game_launcher.backend import constants
 
@@ -92,18 +94,8 @@ class SystemConfig:
         self.__games = []
         self.__configuration = {
             'game_directories': [],
-            'emulator_command': [
-                '${CMD_EMULATOR}'
-            ],
-            'launch_command': [
-                '${CMD_EMULATOR}',
-                '${GAME}'
-            ],
-            'launch_var': {
-                'CMD_EMULATOR': [
-                    'INSERT_COMMAND_HERE'
-                ]
-            },
+            'emulator_command': "",
+            'launch_command': "${EMULATOR} ${GAME}",
             'images': {
                 'thumbnail': {
                     'width': 256,
@@ -210,64 +202,44 @@ class SystemConfig:
         self.__configuration['extensions'] = list(dict.fromkeys(extensions))
 
     @property
-    def emulator_command(self) -> list[str]:
+    def emulator_command(self) -> str:
         """
         Get the emulator command.
 
         Returns:
-            list[str]: The command to get.
+            str: The command to get.
         """
         return self.__configuration['emulator_command']
 
     @emulator_command.setter
-    def emulator_command(self, command: list[str]) -> None:
+    def emulator_command(self, command: str) -> None:
         """
         Set the emulator command.
 
         Parameters:
-            command (list[str]): The command to set.
+            command (str): The command to set.
         """
         self.__configuration['emulator_command'] = command
 
     @property
-    def launch_command(self) -> list[str]:
+    def launch_command(self) -> str:
         """
         Get the launch command.
 
         Returns:
-            list[str]: The command to get.
+            str: The command to get.
         """
         return self.__configuration['launch_command']
 
     @launch_command.setter
-    def launch_command(self, command: list[str]) -> None:
+    def launch_command(self, command: str) -> None:
         """
         Set the launch command.
 
         Parameters:
-            command (list[str]): The command to set.
+            command (str): The command to set.
         """
         self.__configuration['launch_command'] = command
-
-    @property
-    def launch_var(self) -> dict[str, str | list[str]]:
-        """
-        Get the environment variables.
-
-        Returns:
-            dict[str, str | list[str]]: The environment variables.
-        """
-        return self.__configuration['launch_var']
-
-    @launch_var.setter
-    def launch_var(self, var: dict[str, str | list[str]]) -> None:
-        """
-        Set the environment variables.
-
-        Parameters:
-            var (dict[str, str | list[str]]): The environment variables.
-        """
-        self.__configuration['launch_var'] = var
 
     @property
     def image_thumbnail_size(self) -> tuple[int, int]:
@@ -359,44 +331,20 @@ class SystemConfig:
 
     ### COMMANDS
 
-    def substitute_command(self, command: list[str], **kwargs) -> list[str]:
-        """
-        Substitute the command.
+    def run_launch_command(self, rom_path: str) -> subprocess.Popen | None:
+        command = self.launch_command
+        command = command.replace('${EMULATOR}', self.emulator_command)
+        command = command.replace('${GAME}', '"%s"' % rom_path)
+        split_command = shlex.split(command)
+        split_command.insert(0, '--host')
+        split_command.insert(0, '/usr/bin/flatpak-spawn')
+        return subprocess.Popen(split_command)
 
-        Parameters:
-            command (list[str]): The command to substitute.
-
-        Returns:
-             list[str]: The command.
-        """
-        env_map = utility.environment_map(**kwargs)
-        for key, value in self.launch_var.items():
-            env_map[key] = value
-        return utility.environment_replace_command(command, **env_map)
-
-    def get_substituted_launch_command(self, **kwargs) -> list[str]:
-        """
-        Substitute the launch command.
-
-        Returns:
-             list[str]: The launch command.
-        """
-        command = self.substitute_command(self.launch_command, **kwargs)
-        command.insert(0, '--host')
-        command.insert(0, '/usr/bin/flatpak-spawn')
-        return command
-
-    def get_substituted_emulator_command(self, **kwargs) -> list[str]:
-        """
-        Substitute the emulator command.
-
-        Returns:
-             list[str]: The emulator command.
-        """
-        command = self.substitute_command(self.emulator_command, **kwargs)
-        command.insert(0, '--host')
-        command.insert(0, '/usr/bin/flatpak-spawn')
-        return command
+    def run_emulator_command(self) -> subprocess.Popen | None:
+        split_command = shlex.split(self.emulator_command)
+        split_command.insert(0, '--host')
+        split_command.insert(0, '/usr/bin/flatpak-spawn')
+        return subprocess.Popen(split_command)
 
 class NoGameExists(Exception):
     """

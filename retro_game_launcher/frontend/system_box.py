@@ -1,6 +1,5 @@
 import os
 import gi
-import subprocess
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, Gdk, GdkPixbuf, Gio, GLib, Gtk, GObject
@@ -78,7 +77,7 @@ class SystemBox(Gtk.Box):
         Parameters:
             button (Gtk.Button): The button that was clicked
         """
-        subprocess.Popen(self.system_config.get_substituted_emulator_command())
+        self.system_config.run_emulator_command()
 
     @Gtk.Template.Callback()
     def on_manage_btn_clicked(self, button: Gtk.Button) -> None:

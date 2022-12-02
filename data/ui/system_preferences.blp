@@ -21,18 +21,8 @@ template SystemPreferences : Adw.PreferencesWindow {
             }
 
             Adw.ActionRow {
-                subtitle: _("${GAME} is the path to the ROM file");
+                subtitle: _("${EMULATOR} is the emulator command\n${GAME} is the path to the ROM file");
             }
-        }
-
-        .DynamicPreferencesGroup launch_var_group {
-            title: _("Launch Variables");
-            description: _("Define launch variables for commands");
-            add-btn-icon-name: "list-add-symbolic";
-            add-btn-text: _("Add Variable");
-            empty-row-title: _("No variables found");
-            row-added => on_launch_var_row_added();
-            row-removed => on_launch_var_row_removed();
         }
 
         .DynamicPreferencesGroup games_directory_group {

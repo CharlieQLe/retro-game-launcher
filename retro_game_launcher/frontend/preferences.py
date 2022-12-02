@@ -14,6 +14,7 @@ class Preferences(Adw.PreferencesWindow):
     """
     __gtype_name__ = 'Preferences'
 
+    theme_selector: Adw.ComboRow = Gtk.Template.Child()
     tgdb_key_entry: Adw.EntryRow = Gtk.Template.Child()
 
     def __init__(self, **kargs) -> None:
@@ -23,11 +24,19 @@ class Preferences(Adw.PreferencesWindow):
         super().__init__(**kargs)
 
         self.settings: Settings = Settings()
+
+        if self.settings.theme == 'force-light':
+            self.theme_selector.set_selected(1)
+        elif self.settings.theme == 'force-dark':
+            self.theme_selector.set_selected(2)
+        else:
+            self.theme_selector.set_selected(0)
+
         self.tgdb_key_entry.set_text(self.settings.tgdb_api_key)
 
     @Gtk.Template.Callback()
-    def on_theme_dropdown_notify_selected(self, dropdown, selected):
-        selected_pos = dropdown.get_selected()
+    def on_theme_notify_selected(self, row, selected):
+        selected_pos = row.get_selected()
         if selected_pos == 1:
             self.settings.theme = 'force-light'
         elif selected_pos == 2:

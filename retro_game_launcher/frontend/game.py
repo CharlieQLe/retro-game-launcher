@@ -49,6 +49,6 @@ class Game(GObject.Object):
                 return None
             else:
                 self.__process = None
-        self.__process = subprocess.Popen(self.config.get_substituted_launch_command(GAME=self.rom_path))
+        self.__process = self.config.run_launch_command(self.rom_path)
         return self.__process
 

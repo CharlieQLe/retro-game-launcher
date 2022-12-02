@@ -37,8 +37,8 @@ class RetroGameLauncherApp(Adw.Application):
 
         self.__settings = Settings()
         self.__settings.connect_theme_changed(self.on_theme_changed)
-
         self.__style_manager = self.get_style_manager()
+        self.on_theme_changed(None, None)
 
     def on_handle_local_options(self, application, options) -> int:
         if options.contains("system"):

@@ -1,4 +1,3 @@
-import subprocess
 import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
@@ -20,4 +19,4 @@ class MinimalWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_open_emu_btn_clicked(self, button):
-        subprocess.Popen(self.__system_config.get_substituted_emulator_command())
+        self.__system_config.run_emulator_command()

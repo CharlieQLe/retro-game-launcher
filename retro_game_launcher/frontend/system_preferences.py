@@ -6,7 +6,6 @@ from gi.repository import Adw, Gtk, GObject
 from retro_game_launcher.backend.config import SystemConfig
 from retro_game_launcher.frontend.dynamic_preferences_group import DynamicPreferencesGroup, DynamicPreferencesRowFactory
 from retro_game_launcher.frontend.widgets.extension_row import ExtensionRow, ExtensionRowFactory
-from retro_game_launcher.frontend.widgets.key_value_row import KeyValueRow, KeyValueRowFactory
 from retro_game_launcher.frontend.widgets.directory_entry_row import DirectoryEntryRow, DirectoryEntryRowFactory
 
 @Gtk.Template(resource_path='/com/charlieqle/RetroGameLauncher/ui/system_preferences.ui')
@@ -19,7 +18,6 @@ class SystemPreferences(Adw.PreferencesWindow):
 
     launch_command_entry = Gtk.Template.Child()
     emulator_command_entry = Gtk.Template.Child()
-    launch_var_group = Gtk.Template.Child()
     games_directory_group = Gtk.Template.Child()
     thumbnail_width_spbtn = Gtk.Template.Child()
     thumbnail_height_spbtn = Gtk.Template.Child()
@@ -38,19 +36,13 @@ class SystemPreferences(Adw.PreferencesWindow):
         thumbnail_size = self.config.image_thumbnail_size
         self.thumbnail_width_spbtn.set_value(thumbnail_size[0])
         self.thumbnail_height_spbtn.set_value(thumbnail_size[1])
-        self.launch_command_entry.set_text(' '.join(self.config.launch_command))
-        self.emulator_command_entry.set_text(' '.join(self.config.emulator_command))
+        self.launch_command_entry.set_text(self.config.launch_command)
+        self.emulator_command_entry.set_text(self.config.emulator_command)
         self.games_directory_group.set_factory(DirectoryEntryRowFactory())
-        self.launch_var_group.set_factory(KeyValueRowFactory())
         self.extension_group.set_factory(ExtensionRowFactory())
 
         for game_directory in self.config.game_directories:
             self.games_directory_group.generate_row().set_text(game_directory)
-
-        for launch_key, launch_value in self.config.launch_var.items():
-            row = self.launch_var_group.generate_row()
-            row.key = launch_key
-            row.value = ' '.join(launch_value) if launch_key.startswith('CMD_') else launch_value
 
         for extension in self.config.extensions:
             self.extension_group.generate_row().set_text(extension)
@@ -63,7 +55,7 @@ class SystemPreferences(Adw.PreferencesWindow):
         Parameters:
             row (Adw.EntryRow): The row that was changed.
         """
-        self.config.launch_command = row.get_text().split(' ')
+        self.config.launch_command = row.get_text()
         self.config.save()
 
     @Gtk.Template.Callback()
@@ -74,7 +66,7 @@ class SystemPreferences(Adw.PreferencesWindow):
         Parameters:
             row (Adw.EntryRow): The row that was changed.
         """
-        self.config.emulator_command = row.get_text().split(' ')
+        self.config.emulator_command = row.get_text()
         self.config.save()
 
     @Gtk.Template.Callback()
@@ -108,49 +100,6 @@ class SystemPreferences(Adw.PreferencesWindow):
 
     def save_game_directories(self) -> None:
         self.config.game_directories = [ row.get_text() for row in self.games_directory_group.rows ]
-        self.config.save()
-
-    ### LAUNCH
-
-    @Gtk.Template.Callback()
-    def on_launch_var_row_added(self, group: DynamicPreferencesGroup, row: KeyValueRow) -> None:
-        """
-        Handle adding a command row.
-
-        Parameters:
-            group (DynamicPreferencesGroup): The parent of the row.
-            row (KeyValueRow): The added row.
-        """
-        def row_changed(row: KeyValueRow, key: str, value: str) -> None:
-            """
-            Handle the row changing.
-
-            Parameters:
-                row (KeyValueRow): The row that was changed.
-                key (str): The key of the variable.
-                value (str): The value for the variable.
-            """
-            self.save_launch_variables()
-
-        row.connect('key_value_changed', row_changed)
-
-    @Gtk.Template.Callback()
-    def on_launch_var_row_removed(self, group: DynamicPreferencesGroup, row: KeyValueRow) -> None:
-        self.save_launch_variables()
-
-    def save_launch_variables(self) -> None:
-        """
-        Handle saving launch variables.
-        """
-        vars = {}
-        for row in self.launch_var_group.rows:
-            key = row.key
-            value = row.value
-            if key.startswith('CMD_'):
-                vars[key] = value.split(' ')
-            else:
-                vars[key] = value
-        self.config.launch_var = vars
         self.config.save()
 
     ### EXTENSIONS

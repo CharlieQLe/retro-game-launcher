@@ -6,22 +6,17 @@ template Preferences : Adw.PreferencesWindow {
 
     Adw.PreferencesPage {
         Adw.PreferencesGroup {
-            Adw.ActionRow theme_selector {
+            Adw.ComboRow theme_selector {
                 title: "Theme";
                 subtitle: "Change the theme of the application";
-
-                [suffix]
-                Gtk.DropDown {
-                    valign: center;
-                    model: Gtk.StringList {
-                        strings [
-                            "Follow system",
-                            "Light",
-                            "Dark"
-                        ]
-                    };
-                    notify::selected => on_theme_dropdown_notify_selected();
-                }
+                model: Gtk.StringList {
+                    strings [
+                        "Follow system",
+                        "Light",
+                        "Dark"
+                    ]
+                };
+                notify::selected => on_theme_notify_selected();
             }
         }
 

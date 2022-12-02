@@ -1,21 +1,7 @@
 {
     "game_directories": [],
-    "emulator_command": [
-        "${CMD_EMULATOR}"
-    ],
-    "launch_command": [
-        "${CMD_EMULATOR}",
-        "-b",
-        "-e",
-        "${GAME}"
-    ],
-    "launch_var": {
-        "CMD_EMULATOR": [
-            "/usr/bin/flatpak",
-            "run",
-            "org.DolphinEmu.dolphin-emu"
-        ]
-    },
+    "emulator_command": "/usr/bin/flatpak run org.DolphinEmu.dolphin-emu",
+    "launch_command": "${EMULATOR} -b -e ${GAME}",
     "images": {
         "thumbnail": {
             "width": 320.0,

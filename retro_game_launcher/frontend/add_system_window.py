@@ -75,7 +75,6 @@ class AddSystemWindow(Adw.Window):
             sc.extensions = preset.extensions
             sc.emulator_command = preset.emulator_command
             sc.launch_command = preset.launch_command
-            sc.launch_var = preset.launch_var
             sc.image_thumbnail_size = preset.image_thumbnail_size
         sc.save()
 
